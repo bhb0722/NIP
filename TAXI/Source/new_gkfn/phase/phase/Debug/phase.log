@@ -1,3 +1,21 @@
 ﻿  main.cpp
-  phase.vcxproj -> C:\Users\sangho\Desktop\new_gkfn\phase\Debug\phase.exe
-  phase.vcxproj -> C:\Users\sangho\Desktop\new_gkfn\phase\Debug\phase.pdb (Partial PDB)
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main.cpp(7): warning C4101: 'M' :참조되지 않은 지역 변수입니다.
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main.cpp(19): warning C4101: 'mTau' :참조되지 않은 지역 변수입니다.
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main.cpp(11): warning C4101: 'Tau' :참조되지 않은 지역 변수입니다.
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main.cpp(7): warning C4101: 'k' :참조되지 않은 지역 변수입니다.
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main.cpp(13): warning C4101: 'ts' :참조되지 않은 지역 변수입니다.
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main.cpp(11): warning C4101: 'Ns' :참조되지 않은 지역 변수입니다.
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main.cpp(18): warning C4101: 'sm' :참조되지 않은 지역 변수입니다.
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main.cpp(11): warning C4101: 'E' :참조되지 않은 지역 변수입니다.
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main.cpp(14): warning C4101: 'y' :참조되지 않은 지역 변수입니다.
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main.cpp(17): warning C4101: 'dist' :참조되지 않은 지역 변수입니다.
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main.cpp(16): warning C4101: 'l' :참조되지 않은 지역 변수입니다.
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main.cpp(14): warning C4101: 'x' :참조되지 않은 지역 변수입니다.
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main.cpp(8): warning C4101: 'ifp' :참조되지 않은 지역 변수입니다.
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main.cpp(7): warning C4101: 'j' :참조되지 않은 지역 변수입니다.
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main.cpp(7): warning C4101: 'i' :참조되지 않은 지역 변수입니다.
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main.cpp(18): warning C4101: 'msm' :참조되지 않은 지역 변수입니다.
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main.cpp(9): warning C4101: 'ch' :참조되지 않은 지역 변수입니다.
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main.cpp(17): warning C4101: 'mdist' :참조되지 않은 지역 변수입니다.
+  phase.vcxproj -> D:\NIP\trunk\TAXI\Source\new_gkfn\phase\Debug\phase.exe
+  phase.vcxproj -> D:\NIP\trunk\TAXI\Source\new_gkfn\phase\Debug\phase.pdb (Partial PDB)

@@ -1,10 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+#include <cstdio>
+#include <cstdlib>
 
-double abs(double x) {
-	return x < 0.f ? -1.f*x : x;
-}
+#include "gkfn.h"
 
 int main() {
 	int i, j, M, k, n = 0;
@@ -22,7 +19,7 @@ int main() {
 	int mE=0, mTau;
 
 
-	printf("prediction time = ");
+	/*printf("prediction time = ");
 	scanf("%d", &M);
 
 	ifp = fopen("sample2.txt", "r");
@@ -95,7 +92,13 @@ int main() {
 		}
 	}
 
-	fclose(ifp);
+	fclose(ifp);*/
+
+	GKFN *model = new GKFN("input.txt", 6, 3, 1, 0.8);
+	model->learn(20,20);
+	printf("Rsquared = %lf\n", model->getRsquared());
+	printf("RMSE = %lf\n", model->getRMSE());
+	delete model;
 
 	return 0;
 }
