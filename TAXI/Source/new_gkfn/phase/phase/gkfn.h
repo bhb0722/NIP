@@ -54,6 +54,7 @@ class GKFN {
 public:
 	~GKFN();
 	GKFN() {}
+	GKFN(int N, double* ts, int E, int Tau, int PredictionStep, double TraningRate);
 	GKFN(char *filename, int E, int Tau, int PredictionStep, double TraningRate);
 	void learn(int NumOfKernels, int NumOfEpochs, double errMargin = 1.f, double UBofSTD = 1.f);
 	double getRsquared() {

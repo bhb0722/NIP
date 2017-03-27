@@ -17,6 +17,60 @@ GKFN::~GKFN() {
 	delete ts, tso, tsi, tse;
 }
 
+GKFN::GKFN(int N, double* ts, int E, int Tau, int PredictionStep, double TraningRate) {
+	int i, j, k;
+	double Rt;
+	double X;
+
+	tso = new double[Nm];
+	tsi = new double*[Nm];
+	tse = new double[Nm];
+
+	for (i = 0; i < Nm; i++)
+		tsi[i] = new double[id];
+
+	s = new double[di];
+	hn = new double[di];
+	ek = new double[Nm];
+	ck = new double[di];
+	m = new double*[di];
+	Si = new double*[di];
+	o_sse = new double[di];
+
+	for (i = 0; i < di; i++) {
+		m[i] = new double[id];
+		Si[i] = new double[di];
+	}
+
+	this->N = N;
+	this->ts = ts;
+	this->Td = Tau;
+	this->Tk = E;
+
+	Ns = N - Td*(Tk - 1);
+	for (i = 1; i <= Tk; ++i) {
+		k = Td*(i - 1);
+		for (j = 1; j <= Ns; ++j) {
+			k = k + 1;
+			tsi[j][i] = ts[k];
+		}
+	}
+
+	this->Tp = PredictionStep;
+
+	Ns = Ns - Tp;
+	St = Td*(Tk - 1) + Tp;
+	k = St;
+	for (i = 1; i <= Ns; ++i) {
+		k = k + 1;
+		tso[i] = ts[k];
+	}
+	Rt = TraningRate;
+	Nt = Ns*Rt;
+	Nf = Ns - Nt;
+	K0 = 1.f;
+}
+
 GKFN::GKFN(char *filename, int E, int Tau, int PredictionStep, double TraningRate) {
 	int i,j,k;
 	double Rt;
@@ -49,8 +103,7 @@ GKFN::GKFN(char *filename, int E, int Tau, int PredictionStep, double TraningRat
 	if ((fp = fopen(filename, "r")) == NULL)
 		fprintf(stderr, "File Open Error : %s \n", filename);
 
-	for (i = 1; fscanf(fp, "%lf", &X) == 1; ++i)
-		fscanf(fp, "%lf\n", &ts[i]);
+	for (i = 1; fscanf(fp, "%lf", &ts[i]) == 1; ++i);
 
 	fclose(fp);
 	N = i - 1;

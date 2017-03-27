@@ -3,6 +3,8 @@
 
 #include "gkfn.h"
 
+double ts[10000];
+
 int main() {
 	int i, j, M, k, n = 0;
 	FILE *ifp;
@@ -10,7 +12,7 @@ int main() {
 
 	int E, Tau, Ns;
 
-	double ts[10000];
+	
 	double **x, *y;
 
 	int l;
@@ -94,8 +96,22 @@ int main() {
 
 	fclose(ifp);*/
 
+	/*int N;
+	double X;
+	//double ts[1000], X;
+	FILE *fp;
+	char *filename = "input.txt";
+
+	if ((fp = fopen(filename, "r")) == NULL)
+		fprintf(stderr, "File Open Error : %s \n", filename);
+
+	for (i = 1; fscanf(fp, "%lf", &ts[i]) == 1; ++i);
+
+	fclose(fp);
+	N = i - 1;*/
+
 	GKFN *model = new GKFN("input.txt", 6, 3, 1, 0.8);
-	model->learn(20,20);
+	model->learn(5,20);
 	printf("Rsquared = %lf\n", model->getRsquared());
 	printf("RMSE = %lf\n", model->getRMSE());
 	delete model;
