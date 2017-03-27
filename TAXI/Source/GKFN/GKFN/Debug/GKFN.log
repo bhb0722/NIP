@@ -1,0 +1,59 @@
+﻿  gkf.cpp
+c:\users\sangho\desktop\gkfn\gkfn\utility.h(18): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\utility.h(19): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\utility.h(27): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\utility.h(41): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\utility.h(56): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\utility.h(88): warning C4101: 'x': unreferenced local variable
+c:\users\sangho\desktop\gkfn\gkfn\utility.h(101): warning C4101: 'x': unreferenced local variable
+c:\users\sangho\desktop\gkfn\gkfn\utility.h(174): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\utility.h(175): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\utility.h(176): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\utility.h(177): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\utility.h(194): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\utility.h(209): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(39): warning C4101: 'mode': unreferenced local variable
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(40): warning C4101: 'weight_factor': unreferenced local variable
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(39): warning C4101: 'Ws': unreferenced local variable
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(39): warning C4101: 'i': unreferenced local variable
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(99): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(152): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(183): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(224): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(251): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(252): warning C4305: '*=': truncation from 'double' to 'float'
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(118): warning C4101: 'p': unreferenced local variable
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(118): warning C4101: 'q': unreferenced local variable
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(118): warning C4101: 'g': unreferenced local variable
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(118): warning C4101: 'n': unreferenced local variable
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(275): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(276): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(301): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(302): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(326): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(327): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(343): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(262): warning C4101: 'y': unreferenced local variable
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(262): warning C4101: 'x': unreferenced local variable
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(261): warning C4101: 'i': unreferenced local variable
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(376): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(380): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(414): warning C4244: '/=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(416): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(425): warning C4101: 'y': unreferenced local variable
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(492): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(479): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'double'
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(503): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(504): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(512): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(516): warning C4244: 'return': conversion from 'int' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(539): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(551): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(583): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(588): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(610): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(674): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(723): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+c:\users\sangho\desktop\gkfn\gkfn\gkf.cpp(730): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  GKFN.vcxproj -> C:\Users\sangho\Desktop\GKFN\Debug\GKFN.exe
+  GKFN.vcxproj -> C:\Users\sangho\Desktop\GKFN\Debug\GKFN.pdb (Partial PDB)
