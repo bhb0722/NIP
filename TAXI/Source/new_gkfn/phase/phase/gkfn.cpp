@@ -6,15 +6,17 @@
 GKFN::~GKFN() {
 	int i;
 
-	for (i = 0; i < di; i++)
-		delete m[i], Si[i];
+	for (i = 0; i < DIM; i++) {
+		delete m[i];
+		delete Si[i];
+	}
 
-	delete s, hn, ek, ck, m, Si, o_sse;
+	delete s; delete hn; delete  ek; delete  ck; delete  m; delete  Si; delete  o_sse;
 
 	for (i = 0; i < Nm; i++)
 		delete tsi[i];
 
-	delete ts, tso, tsi, tse;
+	delete tso; delete  tsi; delete  tse;
 }
 
 GKFN::GKFN(int N, double* ts, int E, int Tau, int PredictionStep, double TraningRate) {
@@ -29,42 +31,39 @@ GKFN::GKFN(int N, double* ts, int E, int Tau, int PredictionStep, double Traning
 	for (i = 0; i < Nm; i++)
 		tsi[i] = new double[id];
 
-	s = new double[di];
-	hn = new double[di];
+	s = new double[DIM];
+	hn = new double[DIM];
 	ek = new double[Nm];
-	ck = new double[di];
-	m = new double*[di];
-	Si = new double*[di];
-	o_sse = new double[di];
+	ck = new double[DIM];
+	m = new double*[DIM];
+	Si = new double*[DIM];
+	o_sse = new double[DIM];
 
-	for (i = 0; i < di; i++) {
+	for (i = 0; i < DIM; i++) {
 		m[i] = new double[id];
-		Si[i] = new double[di];
+		Si[i] = new double[DIM];
 	}
 
 	this->N = N;
 	this->ts = ts;
 	this->Td = Tau;
 	this->Tk = E;
-
-	Ns = N - Td*(Tk - 1);
-	for (i = 1; i <= Tk; ++i) {
-		k = Td*(i - 1);
-		for (j = 1; j <= Ns; ++j) {
-			k = k + 1;
-			tsi[j][i] = ts[k];
-		}
-	}
-
 	this->Tp = PredictionStep;
 
-	Ns = Ns - Tp;
-	St = Td*(Tk - 1) + Tp;
-	k = St;
-	for (i = 1; i <= Ns; ++i) {
-		k = k + 1;
-		tso[i] = ts[k];
+	Ns = N - (E - 1) * Tau - 1;
+	k = (E - 1) * Tau + 1;
+
+	for (i = 1; i <= Ns; i++)
+	{
+		tso[i] = ts[k + Tp];
+
+		for (j = 0; j < E; j++) {
+			tsi[i][j + 1] = ts[k - j * Tau];
+		}
+
+		k++;
 	}
+
 	Rt = TraningRate;
 	Nt = Ns*Rt;
 	Nf = Ns - Nt;
@@ -85,17 +84,17 @@ GKFN::GKFN(char *filename, int E, int Tau, int PredictionStep, double TraningRat
 	for (i = 0; i < Nm; i++)
 		tsi[i] = new double[id];
 
-	s = new double[di];
-	hn = new double[di];
+	s = new double[DIM];
+	hn = new double[DIM];
 	ek = new double[Nm];
-	ck = new double[di];
-	m = new double*[di];
-	Si = new double*[di];
-	o_sse = new double[di];
+	ck = new double[DIM];
+	m = new double*[DIM];
+	Si = new double*[DIM];
+	o_sse = new double[DIM];
 
-	for (i = 0; i < di; i++) {
+	for (i = 0; i < DIM; i++) {
 		m[i] = new double[id];
-		Si[i] = new double[di];
+		Si[i] = new double[DIM];
 	}
 
 
@@ -185,9 +184,9 @@ void GKFN::PREDICTION() {
 double GKFN::OUTPUT(int i) {
 	int j, k;
 	double yk, x;
-	double *a1 = (double*)malloc(sizeof(double) * Tk);
-	double *a2 = (double*)malloc(sizeof(double) * Tk);
-	double *pka = (double*)malloc(sizeof(double) * Np);
+	double *a1 = new double[Tk];
+	double *a2 = new double[Tk];
+	double *pka = new double[Np];
 
 	/* input-sample */
 	for (j = 1; j <= Tk; ++j)
@@ -215,18 +214,15 @@ void GKFN::RECRUIT_FTN()
 	double c, x, y, z, ec, dk, sk;
 	double yd, yk, Ck;
 	double *a1 = new double[id], *a2 = new double[id], *a3= new double[id];
-	double *aka = new double[di], *akb = new double[di], *pka = new double[di], *pkb = new double[di], *Bka = new double[di], *Bkb = new double[di];
-	double **Psa = new double*[di], **Psi = new double*[di], **dA = new double*[di];
+	double *aka = new double[DIM], *akb = new double[DIM], *pka = new double[DIM], *pkb = new double[DIM], *Bka = new double[DIM], *Bkb = new double[DIM];
+	double **Psa = new double*[DIM], **Psi = new double*[DIM], **dA = new double*[DIM];
 
-	for (i = 0; i < di; i++) {
-		Psa[i] = new double[di];
-		Psi[i] = new double[di];
-		dA[i] = new double[di];
+	for (i = 0; i < DIM; i++) {
+		Psa[i] = new double[DIM];
+		Psi[i] = new double[DIM];
+		dA[i] = new double[DIM];
 	}
 
-	
-
-	
 
 	x = 1000.; // min
 	y = 0.;  // max
@@ -359,10 +355,11 @@ void GKFN::RECRUIT_FTN()
 	}
 	Np = i - 1;
 
-	for (i = 0; i < di; i++)
-		delete Psa[i], Psi[i], dA[i];
+	for (i = 0; i < DIM; i++) {
+		delete Psa[i]; delete  Psi[i]; delete  dA[i];
+	}
 
-	delete a1, a2, a3, aka, akb, pka, pkb, Bka, Bkb, Psa, Psi, dA;
+	delete a1; delete  a2; delete  a3; delete  aka; delete  akb; delete  pka; delete  pkb; delete  Bka; delete  Bkb; delete  Psa; delete  Psi; delete  dA;
 }
 
 void GKFN::GENERAL_INVERSE()
@@ -370,12 +367,10 @@ void GKFN::GENERAL_INVERSE()
 	register int q, p, l, j, k;
 	int i;
 	double x, y, z, sk, dk, Ck;
-	double *aka = new double[di], *akb = new double[di], *ds = new double[di], **dA = new double*[di];
+	double *aka = new double[DIM], *akb = new double[DIM], *ds = new double[DIM], **dA = new double*[DIM];
 
-	for (i = 0; i < di; i++)
-		dA[i] = new double[di];
-
-	
+	for (i = 0; i < DIM; i++)
+		dA[i] = new double[DIM];
 
 	for (q = 1; q <= N2; ++q) {
 		INITIALIZE_SIGMA(1);
@@ -462,16 +457,16 @@ void GKFN::GENERAL_INVERSE()
 		}
 	}
 
-	for (i = 0; i < di; i++)
+	for (i = 0; i < DIM; i++)
 		delete dA[i];
-	delete aka, akb, ds, dA;
+	delete aka; delete  akb; delete  ds; delete  dA;
 }
 
 void GKFN::SIGMA_HN(int iter)
 {
 	register int j, k;
 	double x, y, yd, yk;
-	double *a1 = new double[id], *a2 = new double[id], *a3 = new double[di];
+	double *a1 = new double[id], *a2 = new double[id], *a3 = new double[DIM];
 
 	
 
@@ -500,14 +495,14 @@ void GKFN::SIGMA_HN(int iter)
 			y += (a1[k] - m[j][k])*(a1[k] - m[j][k]);
 		hn[j] = ck[j] * y*exp(-x*y) / (s[j] * s[j] * s[j]);
 	}
-	delete a1, a2, a3;
+	delete a1; delete  a2; delete  a3;
 }
 
 void GKFN::MEAN_HN(int iter)
 {
 	register int j, k;
 	double x, y, z, yd, yk;
-	double *a1 = new double[id], *a2 = new double[id], *a3 = new double[di];
+	double *a1 = new double[id], *a2 = new double[id], *a3 = new double[DIM];
 
 	
 
@@ -543,7 +538,7 @@ void GKFN::MEAN_HN(int iter)
 			hn[Tk*(j - 1) + k] = z*(a1[k] - m[j][k]);
 	}
 
-	delete a1, a2, a3;
+	delete a1; delete  a2; delete  a3;
 }
 
 void GKFN::OUTWEIGHT_HN(int iter)
@@ -569,7 +564,7 @@ void GKFN::OUTWEIGHT_HN(int iter)
 	yk = inner(Np, hn, ck);
 	ek[iter] = yd - yk;
 
-	delete a1, a2;
+	delete a1; delete  a2;
 }
 
 void GKFN::INITIALIZE_SIGMA(int mode) /* 1 = Sigma, Outweight ;; 2 = Mean */
@@ -602,7 +597,7 @@ void GKFN::INITIALIZE_SIGMA(int mode) /* 1 = Sigma, Outweight ;; 2 = Mean */
 //{
 //	register int i, j, k;
 //	double m1, m2, x, z, w, yd, yk, sum;
-//	double a1[id], a2[id], pka[di];
+//	double a1[id], a2[id], pka[DIM];
 //	double tmp1[1000];
 //	/* evaluation on test-samples */
 //

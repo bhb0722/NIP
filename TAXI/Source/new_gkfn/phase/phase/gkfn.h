@@ -9,8 +9,8 @@
 #define SQUARE(x) (if x)
 #define pi 3.141596
 #define id 30       /* max. dimension of input space */   
-#define di 800      /* max. dimension of PFUs */
-#define Nm 1300     /* max. number of time series data */      
+#define DIM 600      /* max. dimension of PFUs */
+#define Nm 3000     /* max. number of time series data */      
 #define sc 0.5      /* initial set-up coeff. of sigma */
 #define er 0.9      /* error decrement rate */
 #define Ip 10       /* number of iterations for parameter estimation */

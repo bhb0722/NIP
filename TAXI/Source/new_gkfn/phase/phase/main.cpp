@@ -3,30 +3,90 @@
 
 #include "gkfn.h"
 
-double ts[10000];
+double *ts;
 
 int main() {
+	int i, j, n;
+	int E, Tau;
+	char fname[20];
+	FILE *fi, *fo;
+	GKFN *model;
+	ts = (double*)malloc(sizeof(double) * 10000);
+
+	for (i = 6; i <= 179; i++) {
+		sprintf(fname, "data/z_%d.txt", i);
+		fi = fopen(fname, "r");
+		sprintf(fname, "result/z_%d.csv", i);
+		fo = fopen(fname, "w");
+
+		for (j = 1; fscanf(fi, "%lf", &ts[j]) == 1; ++j);
+		n = j - 1;
+
+		for (E = 2; E <= 6; E++) {
+			for (Tau = 1; Tau <= 4; Tau++) {
+				model = new GKFN(n,ts, E, Tau, 1, 0.8);
+				model->learn(10, 5);
+
+				printf("----------\n");
+				printf("E = %d, Tau = %d\n", E, Tau);
+				printf("Rsquared = %lf\n", model->getRsquared());
+				printf("RMSE = %lf\n", model->getRMSE());
+				printf("\n");
+
+				fprintf(fo,"%d,%d,%lf,%lf\n", E,Tau,model->getRMSE(), model->getRsquared());
+
+				delete model;
+			}
+		}
+
+		for (E = 24; E <= 24; E++) {
+			for (Tau = 1; Tau <= 1; Tau++) {
+				model = new GKFN(n, ts, E, Tau, 1, 0.8);
+				model->learn(10, 1);
+
+				printf("----------\n");
+				printf("E = %d, Tau = %d\n", E, Tau);
+				printf("Rsquared = %lf\n", model->getRsquared());
+				printf("RMSE = %lf\n", model->getRMSE());
+				printf("\n");
+
+				fprintf(fo, "%d,%d,%lf,%lf\n", E, Tau, model->getRMSE(), model->getRsquared());
+
+				delete model;
+			}
+		}
+
+		fclose(fi);
+		fclose(fo);
+	}
+
+	free(ts);
+	
+	return 0;
+}
+
+void calSmoothnessMeasure() {
 	int i, j, M, k, n = 0;
 	FILE *ifp;
 	char ch;
 
 	int E, Tau, Ns;
 
-	
+
 	double **x, *y;
 
 	int l;
 	double dist, mdist;
 	double sm, msm;
-	int mE=0, mTau;
+	int mE = 0, mTau;
 
 
-	/*printf("prediction time = ");
+	printf("prediction time = ");
 	scanf("%d", &M);
 
 	ifp = fopen("sample2.txt", "r");
 
-	for (i = 0; (ch = getc(ifp)) != EOF; ++i) {
+	for (i = 1; (ch = getc(ifp)) != EOF; ++i) {
 		fscanf(ifp, "%lf", &ts[i]);
 		n++;
 	}
@@ -59,7 +119,7 @@ int main() {
 			}
 
 			for (i = 0; i < Ns; i++) {
-				mdist =- 1.f;
+				mdist = -1.f;
 				for (j = 0; j < Ns; j++) {
 					if (i == j) continue;
 
@@ -89,32 +149,10 @@ int main() {
 				mE = E;
 				mTau = Tau;
 
-				
+
 			}
 		}
 	}
 
-	fclose(ifp);*/
-
-	/*int N;
-	double X;
-	//double ts[1000], X;
-	FILE *fp;
-	char *filename = "input.txt";
-
-	if ((fp = fopen(filename, "r")) == NULL)
-		fprintf(stderr, "File Open Error : %s \n", filename);
-
-	for (i = 1; fscanf(fp, "%lf", &ts[i]) == 1; ++i);
-
-	fclose(fp);
-	N = i - 1;*/
-
-	GKFN *model = new GKFN("input.txt", 6, 3, 1, 0.8);
-	model->learn(5,20);
-	printf("Rsquared = %lf\n", model->getRsquared());
-	printf("RMSE = %lf\n", model->getRMSE());
-	delete model;
-
-	return 0;
+	fclose(ifp);
 }
