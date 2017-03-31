@@ -205,6 +205,10 @@ double GKFN::OUTPUT(int i) {
 	if (yk < 0)
 		return 0.f;
 
+	delete a1;
+	delete a2;
+	delete pka;
+
 	return yk;
 }
 

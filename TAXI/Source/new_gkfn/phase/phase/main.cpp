@@ -4,6 +4,7 @@
 #include "gkfn.h"
 
 double *ts;
+void calSmoothnessMeasure(int n, double* ts, int M);
 
 int main() {
 	int i, j, n;
@@ -13,16 +14,25 @@ int main() {
 	GKFN *model;
 	ts = (double*)malloc(sizeof(double) * 10000);
 
-	for (i = 6; i <= 179; i++) {
+	// 0.9 : 1¹ø
+	// 0.4~0.5 : 3¹ø
+	// 0. : 5¹ø
+	
+	for (i = 3; i <=3; i++) { 
 		sprintf(fname, "data/z_%d.txt", i);
 		fi = fopen(fname, "r");
-		sprintf(fname, "result/z_%d.csv", i);
-		fo = fopen(fname, "w");
+		
 
 		for (j = 1; fscanf(fi, "%lf", &ts[j]) == 1; ++j);
 		n = j - 1;
 
-		for (E = 2; E <= 6; E++) {
+		//calSmoothnessMeasure(n, ts, 1);
+
+		
+		sprintf(fname, "result/z_%d.csv", i);
+		fo = fopen(fname, "w");
+		
+		for (E = 10; E <= 10; E++) {
 			for (Tau = 1; Tau <= 4; Tau++) {
 				model = new GKFN(n,ts, E, Tau, 1, 0.8);
 				model->learn(10, 5);
@@ -55,9 +65,12 @@ int main() {
 				delete model;
 			}
 		}
+		
+		fclose(fo);
+		
 
 		fclose(fi);
-		fclose(fo);
+		
 	}
 
 	free(ts);
@@ -65,37 +78,22 @@ int main() {
 	return 0;
 }
 
-void calSmoothnessMeasure() {
-	int i, j, M, k, n = 0;
+void calSmoothnessMeasure(int n, double* ts, int M) {
+	int i, j, k;
 	FILE *ifp;
 	char ch;
-
 	int E, Tau, Ns;
-
-
 	double **x, *y;
-
 	int l;
 	double dist, mdist;
 	double sm, msm;
 	int mE = 0, mTau;
 
+	ifp = fopen("SmoothnessMeasure.csv", "w");
 
-	printf("prediction time = ");
-	scanf("%d", &M);
+	fprintf(ifp, "E,Tau,Smoothness\n");
 
-	ifp = fopen("sample2.txt", "r");
-
-	for (i = 1; (ch = getc(ifp)) != EOF; ++i) {
-		fscanf(ifp, "%lf", &ts[i]);
-		n++;
-	}
-	fclose(ifp);
-
-	ifp = fopen("output2.txt", "w");
-
-
-	for (E = 2; E <= 40; E++) {
+	for (E = 2; E <= 10; E++) {
 		for (Tau = 1; Tau <= 24; Tau++) {
 			sm = 0.f;
 			Ns = n - (E - 1) * Tau - 1;
@@ -104,9 +102,9 @@ void calSmoothnessMeasure() {
 			y = (double*)calloc(Ns, sizeof(double));
 
 
-			k = (E - 1) * Tau;
+			k = 1 + (E - 1) * Tau;
 
-			for (i = 0; i < Ns; i++)
+			for (i = 1; i <= Ns; i++)
 			{
 				x[i] = (double*)calloc(E, sizeof(double));
 				y[i] = ts[k + M];
@@ -118,9 +116,9 @@ void calSmoothnessMeasure() {
 				k++;
 			}
 
-			for (i = 0; i < Ns; i++) {
+			for (i = 1; i <= Ns; i++) {
 				mdist = -1.f;
-				for (j = 0; j < Ns; j++) {
+				for (j = 1; j <= Ns; j++) {
 					if (i == j) continue;
 
 					dist = 0.f;
@@ -128,28 +126,23 @@ void calSmoothnessMeasure() {
 					for (k = 0; k < E; k++)
 						dist += (x[i][k] - x[j][k])*(x[i][k] - x[j][k]);
 
-					if (mdist == -1.f || mdist > dist) {
+					if (dist != 0.f && (mdist == -1.f || mdist > dist)) {
 						mdist = dist;
 						l = j;
 					}
 				}
 
-				if (mdist == 0) break;
 				sm += abs(y[i] - y[l]) / sqrt(mdist);
 			}
 
-			if (i != Ns)
-				continue;
-
 			sm = 1.f - sm / Ns;
-			fprintf(ifp, "E = %d   Tau = %d   Smoothness = %.4lf\n", E, Tau, sm);
+			fprintf(ifp, "%d,%d,%lf\n", E, Tau, sm);
+			printf("%d,%d,%lf\n", E, Tau, sm);
 
 			if (mE == 0 || msm < sm) {
 				msm = sm;
 				mE = E;
 				mTau = Tau;
-
-
 			}
 		}
 	}
