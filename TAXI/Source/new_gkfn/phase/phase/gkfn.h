@@ -57,11 +57,17 @@ public:
 	GKFN(int N, double* ts, int E, int Tau, int PredictionStep, double TraningRate);
 	GKFN(char *filename, int E, int Tau, int PredictionStep, double TraningRate);
 	void learn(int NumOfKernels, int NumOfEpochs, double errMargin = 1.f, double UBofSTD = 1.f);
-	double getRsquared() {
-		return rsq;
+	double getTrainRsquared() {
+		return trainRsq;
 	}
-	double getRMSE() {
-		return rmse;
+	double getTestRsquared() {
+		return testRsq;
+	}
+	double getTrainRMSE() {
+		return trainRmse;
+	}
+	double getTestRMSE() {
+		return testRmse;
 	}
 	//void test();
 	
@@ -70,7 +76,6 @@ private:
 	void RECRUIT_FTN();
 	void GENERAL_INVERSE();
 	void PREDICTION();
-	double OUTPUT(int i);
 
 
 	void SIGMA_HN(int iter);
@@ -87,8 +92,8 @@ private:
 	double *o_sse;
 
 	// evaluate
-	double rsq;
-	double rmse;
+	double trainRsq, testRsq;
+	double trainRmse, testRmse;
 };
 
 

@@ -4,72 +4,64 @@
 #include "gkfn.h"
 
 double *ts;
-void calSmoothnessMeasure(int n, double* ts, int M);
+void calSmoothnessMeasure(int num, double threshold, int n, double* ts, int M, int &rE, int &rTau);
+GKFN* predictSeries(int n, double *ts,
+	int E, int Tau, int PredictionStep, double TrainingRate,
+	int NumberOfKernels, int Epochs);
 
 int main() {
 	int i, j, n;
-	int E, Tau;
+	int E, Tau, nok;
 	char fname[20];
-	FILE *fi, *fo;
 	GKFN *model;
+	FILE *fi, *fo;
 	ts = (double*)malloc(sizeof(double) * 10000);
+
 
 	// 0.9 : 1¹ø
 	// 0.4~0.5 : 3¹ø
 	// 0. : 5¹ø
 	
-	for (i = 3; i <=3; i++) { 
+	for (i = 1; i <=179; i++) { 
 		sprintf(fname, "data/z_%d.txt", i);
 		fi = fopen(fname, "r");
 		
 
 		for (j = 1; fscanf(fi, "%lf", &ts[j]) == 1; ++j);
+
+		fclose(fi);
 		n = j - 1;
 
-		//calSmoothnessMeasure(n, ts, 1);
+		calSmoothnessMeasure(i,0.4f, n, ts, 1, E, Tau);
 
-		
+		/*E = 10;
+		Tau = 3;*/
+	
+
 		sprintf(fname, "result/z_%d.csv", i);
 		fo = fopen(fname, "w");
 		
-		for (E = 10; E <= 10; E++) {
-			for (Tau = 1; Tau <= 4; Tau++) {
-				model = new GKFN(n,ts, E, Tau, 1, 0.8);
-				model->learn(10, 5);
+		fprintf(fo, "E,Tau,Trate,nok,TrainRsq,TestRsq,TrainRmse,TestRmse\n");
+		printf("E,Tau,Trate,nok,TrainRsq,TestRsq,TrainRmse,TestRmse\n");
 
-				printf("----------\n");
-				printf("E = %d, Tau = %d\n", E, Tau);
-				printf("Rsquared = %lf\n", model->getRsquared());
-				printf("RMSE = %lf\n", model->getRMSE());
-				printf("\n");
+		for (double trate = 0.7; trate <= 0.9; trate += 0.1) {
+			for (nok = 5; nok <= 15; nok++) {
+				double trrsq, trrmse, tersq, termse;
+				model = predictSeries(n, ts, E, Tau, 1, trate, nok, 5);
+				trrsq = model->getTrainRsquared();
+				tersq = model->getTestRsquared();
+				trrmse = model->getTrainRMSE();
+				termse = model->getTestRMSE();
 
-				fprintf(fo,"%d,%d,%lf,%lf\n", E,Tau,model->getRMSE(), model->getRsquared());
-
-				delete model;
-			}
-		}
-
-		for (E = 24; E <= 24; E++) {
-			for (Tau = 1; Tau <= 1; Tau++) {
-				model = new GKFN(n, ts, E, Tau, 1, 0.8);
-				model->learn(10, 1);
-
-				printf("----------\n");
-				printf("E = %d, Tau = %d\n", E, Tau);
-				printf("Rsquared = %lf\n", model->getRsquared());
-				printf("RMSE = %lf\n", model->getRMSE());
-				printf("\n");
-
-				fprintf(fo, "%d,%d,%lf,%lf\n", E, Tau, model->getRMSE(), model->getRsquared());
+				fprintf(fo, "%d,%d,%.1lf,%d,%lf,%lf,%lf,%lf\n",E,Tau,trate,nok,trrsq,tersq,trrmse,termse);
+				printf( "%d,%d,%.1lf,%d,%lf,%lf,%lf,%lf\n", E, Tau, trate, nok, trrsq, tersq, trrmse, termse);
 
 				delete model;
 			}
 		}
-		
+
 		fclose(fo);
 		
-
-		fclose(fi);
 		
 	}
 
@@ -78,10 +70,21 @@ int main() {
 	return 0;
 }
 
-void calSmoothnessMeasure(int n, double* ts, int M) {
+GKFN* predictSeries(int n, double *ts,
+	int E, int Tau, int PredictionStep, double TrainingRate,
+	int NumberOfKernels, int Epochs) {
+    GKFN *model;
+
+	model = new GKFN(n, ts, E, Tau, PredictionStep, TrainingRate);
+	model->learn(NumberOfKernels, Epochs);
+
+	return model;
+}
+
+void calSmoothnessMeasure(int num, double threshold, int n, double* ts, int M, int &rE, int &rTau) {
 	int i, j, k;
 	FILE *ifp;
-	char ch;
+	char ch, fname[20];
 	int E, Tau, Ns;
 	double **x, *y;
 	int l;
@@ -89,18 +92,20 @@ void calSmoothnessMeasure(int n, double* ts, int M) {
 	double sm, msm;
 	int mE = 0, mTau;
 
-	ifp = fopen("SmoothnessMeasure.csv", "w");
+	rTau = 0;
+	sprintf(fname, "sm/sm_%d.csv", num);
+	ifp = fopen(fname, "w");
 
 	fprintf(ifp, "E,Tau,Smoothness\n");
+
 
 	for (E = 2; E <= 10; E++) {
 		for (Tau = 1; Tau <= 24; Tau++) {
 			sm = 0.f;
 			Ns = n - (E - 1) * Tau - 1;
 
-			x = (double**)calloc(Ns, sizeof(double*));
-			y = (double*)calloc(Ns, sizeof(double));
-
+			x = (double**)calloc(Ns+1, sizeof(double*));
+			y = (double*)calloc(Ns+1, sizeof(double));
 
 			k = 1 + (E - 1) * Tau;
 
@@ -137,7 +142,19 @@ void calSmoothnessMeasure(int n, double* ts, int M) {
 
 			sm = 1.f - sm / Ns;
 			fprintf(ifp, "%d,%d,%lf\n", E, Tau, sm);
-			printf("%d,%d,%lf\n", E, Tau, sm);
+			
+
+			for (i = 1; i <= Ns; i++)
+				free(x[i]);
+			free(x);
+			free(y);
+
+			if (rTau == 0 && sm > threshold) {
+				rE = E;
+				rTau = Tau;
+				printf("%d,%d,%lf\n", E, Tau, sm);
+				//return;
+			}
 
 			if (mE == 0 || msm < sm) {
 				msm = sm;
@@ -146,6 +163,10 @@ void calSmoothnessMeasure(int n, double* ts, int M) {
 			}
 		}
 	}
+
+	rE = mE;
+	rTau = mTau;
+	printf("%d,%d,%lf\n", mE, mTau, msm);
 
 	fclose(ifp);
 }

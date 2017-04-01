@@ -148,68 +148,79 @@ void GKFN::learn(int NumOfKernels, int NumOfEpochs, double errMargin, double UBo
 }
 
 void GKFN::PREDICTION() { 
-	int i, n = Nt + Nf;
+	int i, j, n = Nt + Nf;
 	double yavg, ytrue, yest;
 	double nu, de;
+	double yk, x;
+	double *pka = new double[Np+1];
 
-	rsq = 0.f;
-	rmse = 0.f;
+	trainRsq = 0.f;
+	testRsq = 0.f;
+	trainRmse = 0.f;
+	testRmse = 0.f;
 	yavg = 0.f;
 	nu = 0.f;
 	de = 0.f;
 
 	for (i = 1; i <= n; i++) {
-		tse[i] = OUTPUT(i);
-		yavg += tso[i];
+		for (j = 1; j <= Np; ++j) {
+			x = s[j];
+			pka[j] = kernx(Tk, x, tsi[i], m[j]);
+		}
+
+		yk = inner(Np, pka, ck);
+
+		if (yk < 0)
+			yk = 0.f;
+
+		tse[i] = yk;
 	}
 
-	yavg /= n;
+	delete pka;
 
-	for (i = 1; i <= n; i++) {
+	for (i = 1; i <= Nt; i++)
+		yavg += tso[i];
+
+	yavg /= Nt;
+
+	for (i = 1; i <= Nt; i++) {
 		ytrue = tso[i];
 		yest = tse[i];
 
-		rmse += (ytrue - yest)*(ytrue - yest);
+		trainRmse += (ytrue - yest)*(ytrue - yest);
 		de += (ytrue - yavg)*(ytrue - yavg);
 	}
 
-	nu = rmse;
-	rsq = 1.f - nu / de;
+	nu = trainRmse;
+	trainRsq = 1.f - nu / de;
 
-	rmse /= n;
-	rmse = sqrt(rmse);
-	
-}
+	trainRmse /= n;
+	trainRmse = sqrt(trainRmse);
 
-double GKFN::OUTPUT(int i) {
-	int j, k;
-	double yk, x;
-	double *a1 = new double[Tk];
-	double *a2 = new double[Tk];
-	double *pka = new double[Np];
+	yavg = 0.f;
+	de = 0.f;
+	nu = 0.f;
 
-	/* input-sample */
-	for (j = 1; j <= Tk; ++j)
-		a1[j] = tsi[i][j];
-	/* update pka */
-	for (j = 1; j <= Np; ++j) {
-		for (k = 1; k <= Tk; ++k) {
-			a2[k] = m[j][k];
-		}
-		x = s[j];
-		pka[j] = kernx(Tk, x, a1, a2);
+	for (i = Nt+1; i <= n; i++)
+		yavg += tso[i];
+
+	yavg /= Nf;
+
+	for (i = Nt+1; i <= n; i++) {
+		ytrue = tso[i];
+		yest = tse[i];
+
+		testRmse += (ytrue - yest)*(ytrue - yest);
+		de += (ytrue - yavg)*(ytrue - yavg);
 	}
-	/* check error */
-	yk = inner(Np, pka, ck);
 
-	if (yk < 0)
-		return 0.f;
+	nu = testRmse;
+	testRsq = 1.f - nu / de;
 
-	delete a1;
-	delete a2;
-	delete pka;
+	testRmse /= n;
+	testRmse = sqrt(testRmse);
 
-	return yk;
+	
 }
 
 void GKFN::RECRUIT_FTN()
