@@ -19,12 +19,21 @@ int main() {
 	double avg;
 
 
-	// 0.9 : 1¹ø
-	// 0.4~0.5 : 3¹ø
-	// 0. : 5¹ø
 	
-	for (i = 104; i <=179; i++) { 
-		sprintf(fname, "data/z_%d.txt", i);
+	/*
+	1 : pm 1.0
+	2 : pm 2.5
+	3 : O3
+	4 : NO2
+	5 : NO
+	6 : SO2
+	*/
+
+	for (i = 1; i <=6; i++) { 
+
+		if (i == 2) continue;
+
+		sprintf(fname, "data/aq_%d.csv", i);
 		fi = fopen(fname, "r");
 		
 
@@ -34,9 +43,9 @@ int main() {
 		n = j - 1;
 		avg /= n;
 		
-		if (avg < 2.f) continue;
+		//if (avg < 2.f) continue;
 
-		calSmoothnessMeasure(i,0.4f, n, ts, 1, E, Tau);
+		calSmoothnessMeasure(i,0.5f, n, ts, 1, E, Tau);
 
 		/*E = 10;
 		Tau = 3;*/
@@ -48,8 +57,8 @@ int main() {
 		fprintf(fo, "E,Tau,Trate,nok,TrainRsq,TestRsq,TrainRmse,TestRmse\n");
 		printf("E,Tau,Trate,nok,TrainRsq,TestRsq,TrainRmse,TestRmse\n");
 
-		for (double trate = 0.8; trate <= 0.8; trate += 0.1) {
-			for (nok = 7; nok <= 13; nok++) {
+		for (double trate = 0.7; trate <= 0.9; trate += 0.1) {
+			for (nok = 5; nok <= 12; nok++) {
 				double trrsq, trrmse, tersq, termse;
 				model = predictSeries(n, ts, E, Tau, 1, trate, nok, 5);
 				trrsq = model->getTrainRsquared();
@@ -109,8 +118,8 @@ void calSmoothnessMeasure(int num, double threshold, int n, double* ts, int M, i
 	fprintf(ifp, "E,Tau,Smoothness\n");
 
 
-	for (E = 2; E <= 10; E++) {
-		for (Tau = 1; Tau <= 24; Tau++) {
+	for (E = 6; E <= 10; E++) {
+		for (Tau = 1; Tau <= 12; Tau++) {
 			sm = 0.f;
 			Ns = n - (E - 1) * Tau - 1;
 
@@ -152,6 +161,7 @@ void calSmoothnessMeasure(int num, double threshold, int n, double* ts, int M, i
 
 			sm = 1.f - sm / Ns;
 			fprintf(ifp, "%d,%d,%lf\n", E, Tau, sm);
+			printf( "%d,%d,%lf\n", E, Tau, sm);
 			
 
 			for (i = 1; i <= Ns; i++)

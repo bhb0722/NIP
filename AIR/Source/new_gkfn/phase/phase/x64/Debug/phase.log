@@ -1,0 +1,4 @@
+﻿  main.cpp
+d:\nip\trunk\air\source\new_gkfn\phase\phase\main.cpp(106): warning C4101: 'ch' :참조되지 않은 지역 변수입니다.
+  phase.vcxproj -> D:\NIP\trunk\AIR\Source\new_gkfn\phase\x64\Debug\phase.exe
+  phase.vcxproj -> D:\NIP\trunk\AIR\Source\new_gkfn\phase\x64\Debug\phase.pdb (Partial PDB)
