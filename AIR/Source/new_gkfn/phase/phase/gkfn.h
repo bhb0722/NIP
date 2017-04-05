@@ -8,9 +8,9 @@
 #define SGN(x) ((x) > 0 ? (1):(-1)) 
 #define SQUARE(x) (if x)
 #define pi 3.141596
-#define id 30       /* max. dimension of input space */   
+#define id 200       /* max. dimension of input space */   
 #define DIM 600      /* max. dimension of PFUs */
-#define Nm 10000     /* max. number of time series data */      
+#define Nm 20000     /* max. number of time series data */      
 #define sc 0.5      /* initial set-up coeff. of sigma */
 #define er 0.9      /* error decrement rate */
 #define Ip 10       /* number of iterations for parameter estimation */
@@ -54,7 +54,7 @@ class GKFN {
 public:
 	~GKFN();
 	GKFN() {}
-	GKFN(int N, double* ts, int E, int Tau, int PredictionStep, double TraningRate);
+	GKFN(int N, double* ts, int E, int Tau, int PredictionStep, double TraningRate, int aq);
 	GKFN(char *filename, int E, int Tau, int PredictionStep, double TraningRate);
 	void learn(int NumOfKernels, int NumOfEpochs, double errMargin = 1.f, double UBofSTD = 1.f);
 	double getTrainRsquared() {
@@ -68,6 +68,12 @@ public:
 	}
 	double getTestRMSE() {
 		return testRmse;
+	}
+	double getYTrue() {
+		return yTrue;
+	}
+	double getYEst() {
+		return yEst;
 	}
 	//void test();
 	
@@ -84,7 +90,8 @@ private:
 	void INITIALIZE_SIGMA(int mode);
 	
 private:
-	int  N, Nt, Nf, N1, N2, Np, Ns, P2, Td, Tk, Tp, St;
+	int  N, Nt, Nf, N1, N2, Np, Ns, P2, Td, Tk, Tp, St, AQ;
+	double Rt;
 	double ic, si, K0;
 	double *ts, **tsi, *tso; /* data */
 	double *tse;
@@ -94,6 +101,7 @@ private:
 	// evaluate
 	double trainRsq, testRsq;
 	double trainRmse, testRmse;
+	double yTrue, yEst;
 };
 
 

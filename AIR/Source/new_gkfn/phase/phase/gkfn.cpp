@@ -1,6 +1,8 @@
 #include "gkfn.h"
 #include "utility.h"
 
+#define PRTRST 1
+
 // time deley
 
 GKFN::~GKFN() {
@@ -19,11 +21,11 @@ GKFN::~GKFN() {
 	delete tso; delete  tsi; delete  tse;
 }
 
-GKFN::GKFN(int N, double* ts, int E, int Tau, int PredictionStep, double TraningRate) {
+GKFN::GKFN(int N, double* ts, int E, int Tau, int PredictionStep, double TraningRate, int aq) {
 	int i, j, k;
 	double Rt;
 	double X;
-
+	AQ = aq;
 	tso = new double[Nm];
 	tsi = new double*[Nm];
 	tse = new double[Nm];
@@ -49,6 +51,7 @@ GKFN::GKFN(int N, double* ts, int E, int Tau, int PredictionStep, double Traning
 	this->Td = Tau;
 	this->Tk = E;
 	this->Tp = PredictionStep;
+	this->Rt = TraningRate;
 
 	Ns = N - (E - 1) * Tau - 1;
 	k = (E - 1) * Tau + 1;
@@ -72,7 +75,6 @@ GKFN::GKFN(int N, double* ts, int E, int Tau, int PredictionStep, double Traning
 
 GKFN::GKFN(char *filename, int E, int Tau, int PredictionStep, double TraningRate) {
 	int i,j,k;
-	double Rt;
 	double X;
 	FILE *fp;
 
@@ -111,6 +113,7 @@ GKFN::GKFN(char *filename, int E, int Tau, int PredictionStep, double TraningRat
 
 	this->Td = Tau;
 	this->Tk = E;
+	this->Rt = TraningRate;
 
 	Ns = N - Td*(Tk - 1);
 	for (i = 1; i <= Tk; ++i) {
@@ -153,7 +156,25 @@ void GKFN::PREDICTION() {
 	double nu, de;
 	double yk, x;
 	double *pka = new double[Np+1];
+	FILE *res_train, *res_test;
+	char rfname_train[50], rfname_test[50];
 
+#if PRTRST
+	//sprintf(rfname_train, "result/lotto_train.csv");
+	sprintf(rfname_train, "result/real_est_%d_%d_%d_%.2lf_%d_train.csv", AQ, Tk, Td, Rt, N1);
+
+	res_train = fopen(rfname_train, "w");
+
+//	sprintf(rfname_test, "result/lotto_test.csv");
+	sprintf(rfname_test, "result/real_est_%d_%d_%d_%.2f_%d_test.csv", AQ, Tk, Td, Rt, N1);
+
+	res_test = fopen(rfname_test, "w");
+
+	if (res_train == NULL) {
+		printf("[ERROR] Can't open file %s\n\n", rfname_train);
+		return;
+	}
+#endif
 	trainRsq = 0.f;
 	testRsq = 0.f;
 	trainRmse = 0.f;
@@ -182,15 +203,22 @@ void GKFN::PREDICTION() {
 		yavg += tso[i];
 
 	yavg /= Nt;
-
+#if PRTRST
+	fprintf(res_train, "REAL,ESTIMATE\n");
+#endif
 	for (i = 1; i <= Nt; i++) {
 		ytrue = tso[i];
 		yest = tse[i];
 
 		trainRmse += (ytrue - yest)*(ytrue - yest);
 		de += (ytrue - yavg)*(ytrue - yavg);
+#if PRTRST
+		fprintf(res_train, "%lf,%lf\n", ytrue, yest);
+#endif
 	}
-
+#if PRTRST
+	fclose(res_train);
+#endif
 	nu = trainRmse;
 	trainRsq = 1.f - nu / de;
 
@@ -205,15 +233,22 @@ void GKFN::PREDICTION() {
 		yavg += tso[i];
 
 	yavg /= Nf;
-
+#if PRTRST
+	fprintf(res_test, "REAL,ESTIMATE\n");
+#endif
 	for (i = Nt+1; i <= n; i++) {
 		ytrue = tso[i];
 		yest = tse[i];
 
 		testRmse += (ytrue - yest)*(ytrue - yest);
 		de += (ytrue - yavg)*(ytrue - yavg);
+#if PRTRST
+		fprintf(res_test, "%lf,%lf\n", ytrue, yest);
+#endif
 	}
-
+#if PRTRST
+	fclose(res_test);
+#endif
 	nu = testRmse;
 	testRsq = 1.f - nu / de;
 

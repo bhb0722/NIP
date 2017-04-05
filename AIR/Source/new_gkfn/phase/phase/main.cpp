@@ -3,11 +3,26 @@
 
 #include "gkfn.h"
 
+#define HOUR 1
+#define DAY 0
+#define SELET 1
+
+#define TRATE_MIN 0.7f
+#define TRATE_MAX 0.9f
+#define TAU_MIN 3
+#define TAU_MAX 9
+#define E_MIN 9
+#define E_MAX 11
+#define T_RATE_MIN 0.7f
+#define T_RATE_MAX 0.9f
+#define NOK_MIN 6
+#define NOK_MAX 10
+
 double *ts;
 void calSmoothnessMeasure(int num, double threshold, int n, double* ts, int M, int &rE, int &rTau);
 GKFN* predictSeries(int n, double *ts,
 	int E, int Tau, int PredictionStep, double TrainingRate,
-	int NumberOfKernels, int Epochs);
+	int NumberOfKernels, int Epochs, int aq);
 
 int main() {
 	int i, j, n;
@@ -15,7 +30,7 @@ int main() {
 	char fname[20];
 	GKFN *model;
 	FILE *fi, *fo;
-	ts = (double*)malloc(sizeof(double) * 10000);
+	ts = (double*)malloc(sizeof(double) * 20000);
 	double avg;
 
 
@@ -33,7 +48,13 @@ int main() {
 
 		if (i == 2) continue;
 
+#if HOUR
+		//sprintf(fname, "data/lotto.txt");
 		sprintf(fname, "data/aq_%d.csv", i);
+#endif
+#if DAY
+		sprintf(fname, "data/aqd_%d.csv", i);
+#endif
 		fi = fopen(fname, "r");
 		
 
@@ -44,23 +65,27 @@ int main() {
 		avg /= n;
 		
 		//if (avg < 2.f) continue;
-
+#if SELET
 		calSmoothnessMeasure(i,0.5f, n, ts, 1, E, Tau);
-
-		/*E = 10;
-		Tau = 3;*/
-	
-
+#else
+		E = 6;
+		Tau = 1;
+#endif
+#if HOUR
 		sprintf(fname, "result/z_%d.csv", i);
+#endif
+#if DAY
+		sprintf(fname, "result/zd_%d.csv", i);
+#endif
 		fo = fopen(fname, "w");
 		
 		fprintf(fo, "E,Tau,Trate,nok,TrainRsq,TestRsq,TrainRmse,TestRmse\n");
 		printf("E,Tau,Trate,nok,TrainRsq,TestRsq,TrainRmse,TestRmse\n");
 
-		for (double trate = 0.7; trate <= 0.9; trate += 0.1) {
-			for (nok = 5; nok <= 12; nok++) {
-				double trrsq, trrmse, tersq, termse;
-				model = predictSeries(n, ts, E, Tau, 1, trate, nok, 5);
+		for (double trate = T_RATE_MIN; trate <= T_RATE_MAX; trate += 0.1) {
+			for (nok = NOK_MIN; nok <= NOK_MAX; nok++) {
+				double trrsq, trrmse, tersq, termse, ytrue, yest;
+				model = predictSeries(n, ts, E, Tau, 1, trate, nok, 5, i);
 				trrsq = model->getTrainRsquared();
 				tersq = model->getTestRsquared();
 				trrmse = model->getTrainRMSE();
@@ -91,10 +116,10 @@ int main() {
 
 GKFN* predictSeries(int n, double *ts,
 	int E, int Tau, int PredictionStep, double TrainingRate,
-	int NumberOfKernels, int Epochs) {
+	int NumberOfKernels, int Epochs, int aq) {
     GKFN *model;
 
-	model = new GKFN(n, ts, E, Tau, PredictionStep, TrainingRate);
+	model = new GKFN(n, ts, E, Tau, PredictionStep, TrainingRate, aq);
 	model->learn(NumberOfKernels, Epochs);
 
 	return model;
@@ -112,16 +137,27 @@ void calSmoothnessMeasure(int num, double threshold, int n, double* ts, int M, i
 	int mE = 0, mTau;
 
 	rTau = 0;
+
+#if HOUR
 	sprintf(fname, "sm/sm_%d.csv", num);
+#endif
+#if DAY
+	sprintf(fname, "sm/smd_%d.csv", num);
+#endif
+
 	ifp = fopen(fname, "w");
 
 	fprintf(ifp, "E,Tau,Smoothness\n");
 
 
-	for (E = 6; E <= 10; E++) {
-		for (Tau = 1; Tau <= 12; Tau++) {
+	for (E = E_MIN; E <= E_MAX; E++) {
+		for (Tau = TAU_MIN; Tau <= TAU_MAX; Tau++) {
 			sm = 0.f;
 			Ns = n - (E - 1) * Tau - 1;
+
+			if (Ns < 100)
+				continue;
+
 
 			x = (double**)calloc(Ns+1, sizeof(double*));
 			y = (double*)calloc(Ns+1, sizeof(double));
