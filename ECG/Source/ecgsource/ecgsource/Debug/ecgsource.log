@@ -1,0 +1,11 @@
+﻿  main.cpp
+d:\ecg project\ecgsource\ecgsource\main.cpp(196): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+d:\ecg project\ecgsource\ecgsource\main.cpp(218): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+d:\ecg project\ecgsource\ecgsource\main.cpp(280): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+d:\ecg project\ecgsource\ecgsource\main.cpp(281): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+d:\ecg project\ecgsource\ecgsource\main.cpp(298): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+d:\ecg project\ecgsource\ecgsource\main.cpp(299): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+d:\ecg project\ecgsource\ecgsource\main.cpp(317): error C2039: 'test_counting': 'CPON'의 멤버가 아닙니다.
+  d:\ecg project\ecgsource\ecgsource\cpon.h(18): note: 'CPON' 선언을 참조하십시오.
+d:\ecg project\ecgsource\ecgsource\main.cpp(378): error C2039: 'test_measure': 'CPON'의 멤버가 아닙니다.
+  d:\ecg project\ecgsource\ecgsource\cpon.h(18): note: 'CPON' 선언을 참조하십시오.

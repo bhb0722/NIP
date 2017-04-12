@@ -1,0 +1,3 @@
+pj160816.m 을 통하여
+normal 과 abnormal 클래스에 대한 feature을 뽑아냄
+log a | log b | skewness | kurtosis 순으로 적혀있음..
