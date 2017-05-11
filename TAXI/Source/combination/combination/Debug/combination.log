@@ -1,0 +1,12 @@
+﻿  Source.cpp
+c:\users\sangho\desktop\combination\combination\source.cpp(27): warning C4101: 'w': unreferenced local variable
+c:\users\sangho\desktop\combination\combination\source.cpp(163): warning C4101: 'val': unreferenced local variable
+c:\users\sangho\desktop\combination\combination\source.cpp(162): warning C4101: 'index': unreferenced local variable
+c:\users\sangho\desktop\combination\combination\source.cpp(167): warning C4101: 'fname': unreferenced local variable
+c:\users\sangho\desktop\combination\combination\source.cpp(211): warning C4101: 'month': unreferenced local variable
+c:\users\sangho\desktop\combination\combination\source.cpp(290): warning C4101: 'pq': unreferenced local variable
+c:\users\sangho\desktop\combination\combination\source.cpp(291): warning C4101: 'f_c': unreferenced local variable
+c:\users\sangho\desktop\combination\combination\source.cpp(289): warning C4101: 'nq': unreferenced local variable
+c:\users\sangho\desktop\combination\combination\source.cpp(291): warning C4101: 'f_d': unreferenced local variable
+  combination.vcxproj -> C:\Users\sangho\Desktop\combination\Debug\combination.exe
+  combination.vcxproj -> C:\Users\sangho\Desktop\combination\Debug\combination.pdb (Partial PDB)
