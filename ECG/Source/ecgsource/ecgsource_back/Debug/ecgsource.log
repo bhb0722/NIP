@@ -1,0 +1,7 @@
+﻿  main.cpp
+d:\ecg project\ecgsource\ecgsource\main.cpp(213): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+d:\ecg project\ecgsource\ecgsource\main.cpp(214): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+d:\ecg project\ecgsource\ecgsource\main.cpp(231): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+d:\ecg project\ecgsource\ecgsource\main.cpp(232): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  ecgsource.vcxproj -> D:\ecg project\ecgsource\Debug\ecgsource.exe
+  ecgsource.vcxproj -> D:\ecg project\ecgsource\Debug\ecgsource.pdb (Partial PDB)

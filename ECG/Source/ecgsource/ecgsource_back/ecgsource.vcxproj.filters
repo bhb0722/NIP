@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="소스 파일\160815">
+      <UniqueIdentifier>{657ace77-85d5-40a6-9bc6-4d359c76d4ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\globalfunc">
+      <UniqueIdentifier>{8b360d01-21ce-4b8c-ae51-6224806c745b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\160816">
+      <UniqueIdentifier>{eb17eeb0-8936-4752-a26d-698bfa794cce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\cpon">
+      <UniqueIdentifier>{e5cc370d-3fa6-4717-a471-b9e1c6024276}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\160816\cpon">
+      <UniqueIdentifier>{11f2269f-5948-4a35-a10f-8a8648c53824}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\160816\knn">
+      <UniqueIdentifier>{acc7db62-0292-48d5-871d-352976b62b49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\160816\feature">
+      <UniqueIdentifier>{a186ef1e-ba7d-46bb-acb8-788ea3d1fc5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\160816\svm">
+      <UniqueIdentifier>{1b94b47c-daf9-4804-817c-f89f0c026629}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="README_160815.txt">
+      <Filter>소스 파일\160815</Filter>
+    </Text>
+    <Text Include="README_160816.txt">
+      <Filter>소스 파일\160816</Filter>
+    </Text>
+    <Text Include="normal.txt">
+      <Filter>소스 파일\160816\feature</Filter>
+    </Text>
+    <Text Include="abnormal.txt">
+      <Filter>소스 파일\160816\feature</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="feature_extraction.cpp">
+      <Filter>소스 파일\160815</Filter>
+    </ClCompile>
+    <ClCompile Include="gamma.cpp">
+      <Filter>소스 파일\globalfunc</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>소스 파일\160816</Filter>
+    </ClCompile>
+    <ClCompile Include="cpon\BetaEstimator.cpp">
+      <Filter>소스 파일\cpon</Filter>
+    </ClCompile>
+    <ClCompile Include="cpon\ClassUncertainty.cpp">
+      <Filter>소스 파일\cpon</Filter>
+    </ClCompile>
+    <ClCompile Include="cpon\CPON.cpp">
+      <Filter>소스 파일\cpon</Filter>
+    </ClCompile>
+    <ClCompile Include="cpon\CPONLayer.cpp">
+      <Filter>소스 파일\cpon</Filter>
+    </ClCompile>
+    <ClCompile Include="cpon\FLDA.cpp">
+      <Filter>소스 파일\cpon</Filter>
+    </ClCompile>
+    <ClCompile Include="cpon\GlobalFunction.cpp">
+      <Filter>소스 파일\cpon</Filter>
+    </ClCompile>
+    <ClCompile Include="svm_libsvm.cpp">
+      <Filter>소스 파일\160816\svm</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="gamma.h">
+      <Filter>소스 파일\globalfunc</Filter>
+    </ClInclude>
+    <ClInclude Include="cpon\GlobalFunction.h">
+      <Filter>소스 파일\cpon</Filter>
+    </ClInclude>
+    <ClInclude Include="cpon\betadist.h">
+      <Filter>소스 파일\cpon</Filter>
+    </ClInclude>
+    <ClInclude Include="CPON.h">
+      <Filter>소스 파일\160816\cpon</Filter>
+    </ClInclude>
+    <ClInclude Include="kNN.h">
+      <Filter>소스 파일\160816\knn</Filter>
+    </ClInclude>
+    <ClInclude Include="svm.h">
+      <Filter>소스 파일\160816\svm</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

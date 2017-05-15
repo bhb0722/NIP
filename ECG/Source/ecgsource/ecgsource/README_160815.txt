@@ -1,0 +1,19 @@
+기존 프로젝트에서 다음과 같은 문제점들이 발견됨.
+
+1. 데이터 처리에 대해 R signal 값들 중 첫 번째 값은 오측정된 값이 들어온다.
+ 따라서 2번째 부터 RR interval 을 측정해야한다.?
+    => x
+
+2. 현재 Moment Matching Method 를 이용하여 gamma parameter 를 estimation 하였다 이는 논문과 다른 방식.
+    => x
+
+3. 논문에 식 (3) 에서 lambda hat 의 식이 역수로 적혀져다. 
+     => x
+
+따라서 R signal 이 검출된 time 의 raw data 를 새로이 검출하여 이를 통해 window를 다시 씌워 
+gamma estimation을 MLE 방식으로 구해보고 kurtosis skewness 와의 상관관계를 본다. 
+
+----------------------------------------------------------다 해결됨.. 사실은 제대로 하였음.. 
+matlab 
+phat = gamfit(X);
+phat = [alpha 1/lambda]

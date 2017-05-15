@@ -1,0 +1,9 @@
+Accuracy,0.965988
+Normal
+Precision,0.969356
+Recall,0.979772
+F1,0.974536
+Abnormal
+Precision,0.959105
+Recall,0.938712
+F1,0.948799
