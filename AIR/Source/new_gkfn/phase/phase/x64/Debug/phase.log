@@ -1,19 +1,2 @@
-﻿  main.cpp
-c:\users\fanpa\desktop\nip\air\source\new_gkfn\phase\phase\main.cpp(87): warning C4101: 'yest' :참조되지 않은 지역 변수입니다.
-c:\users\fanpa\desktop\nip\air\source\new_gkfn\phase\phase\main.cpp(87): warning C4101: 'ytrue' :참조되지 않은 지역 변수입니다.
-c:\users\fanpa\desktop\nip\air\source\new_gkfn\phase\phase\main.cpp(131): warning C4101: 'ch' :참조되지 않은 지역 변수입니다.
-  gkfn.cpp
-c:\users\fanpa\desktop\nip\air\source\new_gkfn\phase\phase\gkfn.cpp(71): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\fanpa\desktop\nip\air\source\new_gkfn\phase\phase\gkfn.cpp(27): warning C4101: 'X' :참조되지 않은 지역 변수입니다.
-c:\users\fanpa\desktop\nip\air\source\new_gkfn\phase\phase\gkfn.cpp(137): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-c:\users\fanpa\desktop\nip\air\source\new_gkfn\phase\phase\gkfn.cpp(78): warning C4101: 'X' :참조되지 않은 지역 변수입니다.
-c:\users\fanpa\desktop\nip\air\source\new_gkfn\phase\phase\gkfn.cpp(263): warning C4101: 'p' :참조되지 않은 지역 변수입니다.
-c:\users\fanpa\desktop\nip\air\source\new_gkfn\phase\phase\gkfn.cpp(263): warning C4101: 'q' :참조되지 않은 지역 변수입니다.
-c:\users\fanpa\desktop\nip\air\source\new_gkfn\phase\phase\gkfn.cpp(263): warning C4101: 'g' :참조되지 않은 지역 변수입니다.
-c:\users\fanpa\desktop\nip\air\source\new_gkfn\phase\phase\gkfn.cpp(263): warning C4101: 'n' :참조되지 않은 지역 변수입니다.
-c:\users\fanpa\desktop\nip\air\source\new_gkfn\phase\phase\gkfn.cpp(419): warning C4101: 'y' :참조되지 않은 지역 변수입니다.
-c:\users\fanpa\desktop\nip\air\source\new_gkfn\phase\phase\gkfn.cpp(419): warning C4101: 'x' :참조되지 않은 지역 변수입니다.
-c:\users\fanpa\desktop\nip\air\source\new_gkfn\phase\phase\gkfn.cpp(597): warning C4101: 'y' :참조되지 않은 지역 변수입니다.
-  코드를 생성하고 있습니다...
-  phase.vcxproj -> C:\Users\fanpa\Desktop\NIP\AIR\Source\new_gkfn\phase\x64\Debug\phase.exe
+﻿  phase.vcxproj -> C:\Users\fanpa\Desktop\NIP\AIR\Source\new_gkfn\phase\x64\Debug\phase.exe
   phase.vcxproj -> C:\Users\fanpa\Desktop\NIP\AIR\Source\new_gkfn\phase\x64\Debug\phase.pdb (Partial PDB)
