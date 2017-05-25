@@ -5,6 +5,18 @@
 #include "gkfn.h"
 
 #define SELET 1
+#define SPOTS 25
+#define MAX_BUF 1024
+#define DATAS 17520
+#define DAYS 730
+
+#define VER1 0
+#define VER2 1
+#if VER2
+#define DAY 1
+#define HOUR 0
+#endif
+
 #if 0
 #define TRATE_MIN 0.7f
 #define TRATE_MAX 0.9f
@@ -17,40 +29,55 @@
 #define NOK_MIN 6
 #define NOK_MAX 10
 #endif
+
 double *ts;
 void calSmoothnessMeasure(int num, double threshold, int n, double* ts, int M, int &rE, int &rTau);
 GKFN* predictSeries(int n, double *ts,
 	int E, int Tau, int PredictionStep, double TrainingRate,
-	int NumberOfKernels, int Epochs, int aq);
-
+	int NumberOfKernels, int Epochs, int aq, char *spot);
+#if VER1
 int extract_data(char *spot_name, int ele);
 int interpolation(char *file);
+#endif
+#if VER2
+int interpolation(double *data);
+bool daily_avg(double *data, double *data_days);
+#endif
+bool dispose_mem();
+double atod(char *str);
+void rtrim(char *str);
 double get_intpol(int d1, int d2, double x1, double x2);
 
-int TAU_MIN = 3;
-int TAU_MAX = 7;
-int E_MIN = 9;
-int E_MAX = 11;
-double T_RATE_MIN = 0.6;
-double T_RATE_MAX = 0.7;
-int NOK_MIN = 10;
-int NOK_MAX = 13;
-
+int TAU_MIN = 1;
+int TAU_MAX = 10;
+int E_MIN = 1;
+int E_MAX = 12;
+double T_RATE_MIN = 0.4;
+double T_RATE_MAX = 0.6;
+int NOK_MIN = 3;
+int NOK_MAX = 10;
+#if VER2
+double **data;
+double **data_days;
+#endif
 
 int main() {
 	int i, j, n;
 	int E, Tau, nok;
 	char fname[50];
+#if VER1
 	char data[20];
+#endif
 	int year;
 	GKFN *model;
 	FILE *fi, *fo, *foo;
+#if VER1
 	ts = (double*)malloc(sizeof(double) * 20000);
+#endif
 	double avg;
-	char spot[39][20] = { "구로구", "강남대로", "강남구", "강동구", "강변북로", "강북구", "강서구", "공항대로", "관악구", "광진구",
-							"금천구", "노원구", "도봉구", "도산대로", "동대문구", "동작구", "동작대로 중앙차로", "마포구", "서대문구", "서초구",
-							"성동구", "성북구", "송파구", "신촌로", "양천구", "영등포구", "영등포로", "용산구", "은평구",  "정릉로",
-							"종로", "종로구", "중구", "중랑구", "천호대로", "청계천로", "한강대로", "홍릉로", "화랑로" };
+	char spot[SPOTS][20] = { "강남구", "강동구", "강북구", "강서구", "관악구", "광진구", "구로구", "금천구", "노원구", "도봉구", "동대문구",
+		"동작구", "마포구", "서대문구", "서초구", "성동구", "성북구", "송파구", "양천구", "영등포구", "용산구", "은평구",
+		"종로구", "중구", "중랑구" };
 	double rsq_max[39][4];
 
 	int mode, all;
@@ -64,7 +91,7 @@ int main() {
 	5 : PM10
 	6 : PM2.5
 	*/
-
+#if VER1
 	printf("!1 : All spots, 1 : select spot\n");
 	scanf("%d", &all);
 
@@ -220,10 +247,188 @@ int main() {
 		}
 	}
 	free(ts);
+#endif
 	
+#if VER2
+	char buf[500];
+	char *token;
+
+	data = (double **)malloc(sizeof(double*) * SPOTS);
+	for (int i = 0; i < SPOTS; i++) {
+		data[i] = (double *)malloc(sizeof(double) * DATAS);
+	}
+#if DAY
+	data_days = (double **)malloc(sizeof(double*) * SPOTS);
+	for (int i = 0; i < SPOTS; i++) {
+		data_days[i] = (double *)malloc(sizeof(double) * DAYS);
+	}
+#endif
+
+	for (int ele = 1; ele <= 5; ele++) {
+		i = 0; j = 0;
+		sprintf(fname, "data/%d.csv", ele);
+		fi = fopen(fname, "r");
+
+		if (fi == NULL) {
+			printf("[ERROR] file open error");
+			dispose_mem();
+			return 0;
+		}
+
+		while (fgets(buf, MAX_BUF, fi) != NULL) {
+			rtrim(buf);
+			token = strtok(buf, ",");
+			while (token != NULL) {
+				data[i][j] = atod(token);
+				token = strtok(NULL, ",");
+				i++;
+			}
+			j++;
+			i = 0;
+		}
+
+		for (i = 0; i < SPOTS; i++)
+			interpolation(data[i]);
+#if DAY
+		for (i = 0; i < SPOTS; i++)
+			daily_avg(data[i], data_days[i]);
+#endif
+
+		for (i = 0; i < SPOTS; i++) {
+#if DAY
+			calSmoothnessMeasure(ele, 0.5f, DAYS, data_days[i], 1, E, Tau);
+
+			sprintf(fname, "result/%s_%d.csv", spot[i], ele);
+			fo = fopen(fname, "w");
+
+			fprintf(fo, "E,Tau,Trate,nok,TrainRsq,TestRsq,TrainRmse,TestRmse\n");
+			printf("E\tTau\tTrate\tnok\tTrainRsq\tTestRsq\t\tTrainRmse\tTestRmse\n");
+
+			for (double trate = T_RATE_MIN; trate <= T_RATE_MAX; trate += 0.1) {
+				for (nok = NOK_MIN; nok <= NOK_MAX; nok++) {
+					double trrsq, trrmse, tersq, termse, ytrue, yest;
+					model = predictSeries(DAYS, data_days[i], E, Tau, 1, trate, nok, 5, ele, spot[i]);
+					trrsq = model->getTrainRsquared();
+					tersq = model->getTestRsquared();
+					trrmse = model->getTrainRMSE();
+					termse = model->getTestRMSE();
+
+					// 이거
+					if (isnan(trrsq) || isnan(tersq) || isnan(trrmse) || isnan(termse)) {
+						delete model;
+						break;
+					}
+
+					fprintf(fo, "%d,%d,%.1lf,%d,%lf,%lf,%lf,%lf\n", E, Tau, trate, nok, trrsq, tersq, trrmse, termse);
+					printf("%d\t%d\t%.1lf\t%d\t%lf\t%lf\t%lf\t%lf\n", E, Tau, trate, nok, trrsq, tersq, trrmse, termse);
+
+					delete model;
+				}
+			}
+#else
+			calSmoothnessMeasure(ele, 0.5f, DATAS, data[i], 1, E, Tau);
+
+			sprintf(fname, "result/%s_%d.csv", spot[i], ele);
+			fo = fopen(fname, "w");
+
+			fprintf(fo, "E,Tau,Trate,nok,TrainRsq,TestRsq,TrainRmse,TestRmse\n");
+			printf("E\tTau\tTrate\tnok\tTrainRsq\tTestRsq\t\tTrainRmse\tTestRmse\n");
+
+			for (double trate = T_RATE_MIN; trate <= T_RATE_MAX; trate += 0.1) {
+				for (nok = NOK_MIN; nok <= NOK_MAX; nok++) {
+					double trrsq, trrmse, tersq, termse, ytrue, yest;
+					model = predictSeries(DATAS, data[i], E, Tau, 1, trate, nok, 5, i);
+					trrsq = model->getTrainRsquared();
+					tersq = model->getTestRsquared();
+					trrmse = model->getTrainRMSE();
+					termse = model->getTestRMSE();
+
+					// 이거
+					if (isnan(trrsq) || isnan(tersq) || isnan(trrmse) || isnan(termse)) {
+						delete model;
+						break;
+					}
+
+					fprintf(fo, "%d,%d,%.1lf,%d,%lf,%lf,%lf,%lf\n", E, Tau, trate, nok, trrsq, tersq, trrmse, termse);
+					printf("%d\t%d\t%.1lf\t%d\t%lf\t%lf\t%lf\t%lf\n", E, Tau, trate, nok, trrsq, tersq, trrmse, termse);
+
+					delete model;
+				}
+			}
+#endif
+			fclose(fo);
+		}
+
+		fclose(fi);
+
+	}
+
+	dispose_mem();
+#endif
 	return 0;
 }
+#if VER2
 
+bool daily_avg(double *data, double *data_days) {
+	int j = 0;
+	double temp = 0.;
+	for (int i = 0; i < DATAS; i++) {
+		temp += data[i];
+		if ((i + 1) % 24 == 23) {
+			data_days[j] = (temp / 24);
+			j++;
+			temp = 0.;
+		}
+	}
+
+	return true;
+}
+
+bool dispose_mem() {
+	for (int i = 0; i < SPOTS; i++) {
+		free(data[i]);
+	}
+	free(data);
+	return true;
+}
+
+void rtrim(char *str) {
+	int len = strlen(str);
+	len--;
+	while (str[len] == '\n' || str[len] == ' ') {
+		str[len] = '\0';
+		len--;
+	}
+}
+
+double atod(char *str) {
+	int len = strlen(str);
+	int i;
+	double ret_val = 0., pos = 1.;
+	int f = 0;
+
+	if (str[0] == '-')
+		return 0.;
+
+	for (i = 0; i < len; i++) {
+		if (str[i] == '.') {
+			f = i;
+		}
+		else {
+			if (f == 0) {
+				ret_val *= 10.;
+				ret_val += str[i] - 48;
+			}
+			else {
+				ret_val += (str[i] - 48) * pow(0.1, (i - f));
+			}
+		}
+	}
+
+	return pos * ret_val;
+}
+#endif
+#if VER1
 int extract_data(char *spot_name, int ele) {
 	FILE *fi, *fo;
 	char foname[50];
@@ -254,9 +459,7 @@ int extract_data(char *spot_name, int ele) {
 						}
 					}
 					else {
-						/*if (j == 2)
-							fprintf(fo, "%s,", token);
-						else */if (j - 2 < ele) {
+						if (j - 2 < ele) {
 							continue;
 						}
 						else if (j - 2 == ele) {
@@ -342,7 +545,36 @@ int interpolation(char *file) {
 
 	return 1;
 }
+#endif
+#if VER2
+int interpolation(double *data) {
 
+	int i, j, k;
+	int x2;
+	int data_cnt;
+	int cnt = 0;
+
+	for (j = 0; j < DATAS; j++) {
+		if (data[j] == 0.) {
+			k = j;
+			while (data[k] == 0.) k++;
+			x2 = k;
+			k--;
+
+			for (k; k >= j; k--) {
+				data[k] = get_intpol(k - j + 1, x2 - k, data[j - 1], data[x2]);
+				cnt++;
+			}
+			j = x2 - 1;
+
+		}
+	}
+
+	//printf("%d changed\n", cnt);
+
+	return 1;
+}
+#endif
 double get_intpol(int d1, int d2, double x1, double x2) {
 
 	return ((d2*x1) / (d1 + d2)) + ((d1*x2) / (d1 + d2));
@@ -351,10 +583,10 @@ double get_intpol(int d1, int d2, double x1, double x2) {
 
 GKFN* predictSeries(int n, double *ts,
 	int E, int Tau, int PredictionStep, double TrainingRate,
-	int NumberOfKernels, int Epochs, int aq) {
+	int NumberOfKernels, int Epochs, int aq, char *spot) {
     GKFN *model;
 
-	model = new GKFN(n, ts, E, Tau, PredictionStep, TrainingRate, aq);
+	model = new GKFN(n, ts, E, Tau, PredictionStep, TrainingRate, aq, spot);
 	model->learn(NumberOfKernels, Epochs);
 
 	return model;

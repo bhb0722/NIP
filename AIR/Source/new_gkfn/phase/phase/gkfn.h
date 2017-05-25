@@ -54,7 +54,7 @@ class GKFN {
 public:
 	~GKFN();
 	GKFN() {}
-	GKFN(int N, double* ts, int E, int Tau, int PredictionStep, double TraningRate, int aq);
+	GKFN(int N, double* ts, int E, int Tau, int PredictionStep, double TraningRate, int aq, char *spot);
 	GKFN(char *filename, int E, int Tau, int PredictionStep, double TraningRate);
 	void learn(int NumOfKernels, int NumOfEpochs, double errMargin = 1.f, double UBofSTD = 1.f);
 	double getTrainRsquared() {
@@ -97,6 +97,8 @@ private:
 	double *tse;
 	double *s, *hn, *ek, *ck, **m, **Si; /* param  */
 	double *o_sse;
+
+	char SPOT[20];
 
 	// evaluate
 	double trainRsq, testRsq;

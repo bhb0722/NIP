@@ -1,5 +1,6 @@
 #include "gkfn.h"
 #include "utility.h"
+#include <string.h>
 
 #define PRTRST 1
 
@@ -21,11 +22,12 @@ GKFN::~GKFN() {
 	delete tso; delete  tsi; delete  tse;
 }
 
-GKFN::GKFN(int N, double* ts, int E, int Tau, int PredictionStep, double TraningRate, int aq) {
+GKFN::GKFN(int N, double* ts, int E, int Tau, int PredictionStep, double TraningRate, int aq, char *spot) {
 	int i, j, k;
 	double Rt;
 	double X;
 	AQ = aq;
+	strcpy(SPOT, spot);
 	tso = new double[Nm];
 	tsi = new double*[Nm];
 	tse = new double[Nm];
@@ -160,13 +162,11 @@ void GKFN::PREDICTION() {
 	char rfname_train[50], rfname_test[50];
 
 #if PRTRST
-	//sprintf(rfname_train, "result/lotto_train.csv");
-	sprintf(rfname_train, "result/real_est_%d_%d_%d_%.2lf_%d_train.csv", AQ, Tk, Td, Rt, N1);
+	sprintf(rfname_train, "result/%s_%d_%d_%d_%.2lf_%d_train.csv", SPOT, AQ, Tk, Td, Rt, N1);
 
 	res_train = fopen(rfname_train, "w");
 
-//	sprintf(rfname_test, "result/lotto_test.csv");
-	sprintf(rfname_test, "result/real_est_%d_%d_%d_%.2f_%d_test.csv", AQ, Tk, Td, Rt, N1);
+	sprintf(rfname_test, "result/%s_%d_%d_%d_%.2f_%d_test.csv", SPOT, AQ, Tk, Td, Rt, N1);
 
 	res_test = fopen(rfname_test, "w");
 

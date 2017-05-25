@@ -7,15 +7,22 @@
 
 #define MAX_BUF 512
 #define SPOTS 25
-#define DATAS 17520
 
-bool dispose_mem();
+#define N_DATA 17520
+#define N_DAYS 730
+
+#define DAY 0
+
+void readData(int element);
+void disposeMem();
 
 int interpolation(double *data);
 double get_intpol(int d1, int d2, double x1, double x2);
 
 double atod(char *str);
-
+#if DAY
+void getDailyAvg(int spot);
+#endif
 bool make_clp_db();
 void rtrim(char *str);
 
@@ -31,10 +38,13 @@ char spot[SPOTS][20] = { "강남구", "강동구", "강북구", "강서구", "관악구", "광진
                       "동작구", "마포구", "서대문구", "서초구", "성동구", "성북구", "송파구", "양천구", "영등포구", "용산구", "은평구",
 	                  "종로구", "중구", "중랑구"};
 
+double max[SPOTS] = { 0., 0., 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0. };
 double **data;
+#if DAY
+double **daily_data;
+#endif
 
 int main() {
-	FILE *fi;
 	char fname[50];
 	char check;
 	int i = 0, j = 0;
@@ -43,17 +53,21 @@ int main() {
 	double section_length;
 	float t_rate = 0.9f;
 	int train_index, test_index;
-	double max[SPOTS] = {0., 0., 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.};
+	
 	double *avg;
 	double rsq, average;
 	int *count;
 	
 	char buf[MAX_BUF], *token;
 
-	data = (double **)malloc(sizeof(double*) * SPOTS);
-	for (int i = 0; i < SPOTS; i++) {
-		data[i] = (double *)malloc(sizeof(double) * 20000);
-	}
+	data = (double **)calloc(SPOTS, sizeof(double*));
+	for (int i = 0; i < SPOTS; i++)
+		data[i] = (double *)calloc(N_DATA, sizeof(double));
+#if DAY
+	daily_data = (double **)calloc(SPOTS, sizeof(double *));
+	for (int i = 0; i < SPOTS; i++)
+		daily_data[i] = (double *)calloc(N_DAYS, sizeof(double));
+#endif
 
 	printf("Make DB(Y?) : ");
 	scanf("%c", &check);
@@ -61,65 +75,61 @@ int main() {
 	if (check == 'Y') {
 		if (!make_clp_db()) {
 			printf("error\n");
-			dispose_mem();
+			disposeMem();
 			return 0;
 		}
 	}
 
-	for (int ele = 1; ele <= 5; ele++) {
-		i = 0; j = 0;
-		sprintf(fname, "data/%d.csv", ele);
-		fi = fopen(fname, "r");
-
-		if (fi == NULL) {
-			printf("[ERROR] file open error");
-			dispose_mem();
-			return 0;
-		}
-
-		while (fgets(buf, MAX_BUF, fi) != NULL) {
-			rtrim(buf);
-			token = strtok(buf, ",");
-			while (token != NULL) {
-				data[i][j] = atod(token);
-				max[i] = data[i][j] > max[i] ? data[i][j] : max[i];
-				token = strtok(NULL, ",");
-				i++;
-			}
-			j++;
-			i = 0;
-		}
+	for (int element = 1; element <= 5; element++) {
+		
+		readData(element);
 
 		for (i = 0; i < SPOTS; i++)
 			interpolation(data[i]);
-
-		train_index = (int)(DATAS * t_rate);
+#if DAY
+		train_index = (int)(N_DAYS * t_rate);
 		test_index = train_index + 1;
+#else
+		train_index = (int)(N_DATA * t_rate);
+		test_index = train_index + 1;
+#endif
 
 #if 1
 
-		for (i = 0; i < SPOTS; i++) {
-			sprintf(fname, "result/%s_real_est_Ele%d_TimeDelay%d.csv", spot[i], ele, time_delay);
+		for (int spotIndex = 0; spotIndex < SPOTS; spotIndex++) {
+			sprintf(fname, "result/%s_real_est_Ele%d_TimeDelay%d.csv", spot[spotIndex], element, time_delay);
 			FILE *fo = fopen(fname, "w");
 			if (fo == NULL) {
 				printf("FILE OPEN ERROR\n");
-				dispose_mem();
+				disposeMem();
 				return 0;
 			}
 
 			avg = (double *)calloc(section, sizeof(double));
 			count = (int *)calloc(section, sizeof(int));
-
+#if DAY
+			getDailyAvg(spotIndex);
+#endif
 			// Get section average
-			section_length = max[i] / section;
+#if DAY
+			section_length = max[spotIndex] / section;
 			for (j = 0; j < train_index; j++) {
-				int index = (int)(data[i][j] / section_length);
+				int index = (int)(daily_data[spotIndex][j] / section_length);
 				if (index >= section)
 					index = section - 1;
-				avg[index] += data[i][j + time_delay];
+				avg[index] += daily_data[spotIndex][j + time_delay];
 				count[index]++;
 			}
-
+#else
+			section_length = max[spotIndex] / section;
+			for (j = 0; j < train_index; j++) {
+				int index = (int)(data[spotIndex][j] / section_length);
+				if (index >= section)
+					index = section - 1;
+				avg[index] += data[spotIndex][j + time_delay];
+				count[index]++;
+			}
+#endif
 			average = 0.; rsq = 0.;
 
 			for (j = 0; j < section; j++) {
@@ -134,67 +144,130 @@ int main() {
 
 			double rmse = 0.;
 			double est;
-
-			for (j = test_index; j < DATAS; j++) {
-				average += data[i][j];
+#if DAY
+			for (j = test_index; j < N_DAYS; j++) {
+				average += daily_data[spotIndex][j];
 			}
-			average /= (DATAS - test_index);
+			average /= (N_DAYS - test_index);
+#else
+			for (j = test_index; j < N_DATA; j++) {
+				average += data[spotIndex][j];
+			}
+			average /= (N_DATA - test_index);
+#endif
 
-			for (j = test_index; j < DATAS; j++) {
-				int index = (int)(data[i][j - time_delay] / section_length);
+#if DAY
+			for (j = test_index; j < N_DAYS; j++) {
+				int index = (int)(daily_data[spotIndex][j - time_delay] / section_length);
 				if (index >= section)
 					index = section - 1;
 				if (avg[index] == 0) {
-					est = data[i][j - time_delay];
+					est = daily_data[spotIndex][j - time_delay];
 				}
 				else {
 					est = avg[index];
 				}
-				rmse += pow(data[i][j] - est, 2);
-				rsq += pow(data[i][j] - average, 2);
-				fprintf(fo, "%f,%f\n", data[i][j], est);
+				rmse += pow(daily_data[spotIndex][j] - est, 2);
+				rsq += pow(daily_data[spotIndex][j] - average, 2);
+				fprintf(fo, "%f,%f\n", daily_data[spotIndex][j], est);
 			}
+#else
+			for (j = test_index; j < N_DATA; j++) {
+				int index = (int)(data[spotIndex][j - time_delay] / section_length);
+				if (index >= section)
+					index = section - 1;
+				if (avg[index] == 0) {
+					est = data[spotIndex][j - time_delay];
+				}
+				else {
+					est = avg[index];
+				}
+				rmse += pow(data[spotIndex][j] - est, 2);
+				rsq += pow(data[spotIndex][j] - average, 2);
+				fprintf(fo, "%f,%f\n", data[spotIndex][j], est);
+			}
+#endif
 
 			rsq = 1. - rmse / rsq;
-
-			rmse /= (DATAS - test_index);
+#if DAY
+			rmse /= (N_DAYS - test_index);
+#else
+			rmse /= (N_DATA - test_index);
+#endif
 			rmse = sqrt(rmse);
 
-			fprintf(fo, "RMSE,%lf", rmse);
+			fprintf(fo, "RMSE,%lf,", rmse);
 			fprintf(fo, "RSQ,%lf", rsq);
 
 			fclose(fo);
 
-			printf("RMSE of %s : %lf / RSQ: %lf\n", spot[i], rmse, rsq);
+			printf("RMSE of %s : %lf / RSQ: %lf\n", spot[spotIndex], rmse, rsq);
 
 			free(count);
 			free(avg);
 
-			sprintf(fname, "%s_cooc_ele%d_timedelay%d.csv", spot[i], ele, time_delay);
+			sprintf(fname, "%s_cooc_ele%d_timedelay%d.csv", spot[spotIndex], element, time_delay);
 			fo = fopen(fname, "w");
-
-			for (int fi = 0; fi < DATAS - time_delay; fi++) {
+#if DAY
+			for (int fi = 0; fi < N_DAYS - time_delay; fi++) {
+				fprintf(fo, "%f,%f\n", daily_data[0][fi], daily_data[0][fi + time_delay]);
+			}
+#else
+			for (int fi = 0; fi < N_DATA - time_delay; fi++) {
 				fprintf(fo, "%f,%f\n", data[0][fi], data[0][fi + time_delay]);
 			}
-
+#endif
 			fclose(fo);
 
 		}
 #endif
-		fclose(fi);
 
 	}
 	
-	dispose_mem();
+	disposeMem();
 	return 1;
 }
 
-bool dispose_mem() {
+void readData(int element) {
+	char fname[50], buf[MAX_BUF];
+	char *token;
+	int i = 0, j = 0;
+	FILE *fi;
+
+	sprintf(fname, "data/%d.csv", element);
+	fi = fopen(fname, "r");
+
+	if (fi == NULL) {
+		printf("[ERROR] file open error");
+		disposeMem();
+		return;
+	}
+
+	while (fgets(buf, MAX_BUF, fi) != NULL) {
+		rtrim(buf);
+		token = strtok(buf, ",");
+		while (token != NULL) {
+			data[i][j] = atod(token);
+			max[i] = max[i] > data[i][j] ? max[i] : data[i][j];
+			token = strtok(NULL, ",");
+			i++;
+		}
+		j++;
+		i = 0;
+	}
+}
+
+
+void disposeMem() {
 	for (int i = 0; i < SPOTS; i++) {
 		free(data[i]);
 	}
 	free(data);
-	return true;
+#if DAY
+	for (int i = 0; i < SPOTS; i++)
+		free(daily_data[i]);
+	free(daily_data);
+#endif
 }
 
 double atod(char *str) {
@@ -249,6 +322,23 @@ int interpolation(double *data) {
 
 	return 1;
 }
+
+#if DAY
+void getDailyAvg(int spot) {
+	double temp = 0.;
+	int j = 1;
+
+	for (int i = 1; i <= N_DATA; i++) {
+		temp += data[spot][i];
+		if (i % 24 == 0) {
+			daily_data[spot][j] = temp / 24;
+			j++;
+			temp = 0.;
+		}
+	}
+
+}
+#endif
 
 double get_intpol(int d1, int d2, double x1, double x2) {
 

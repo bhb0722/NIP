@@ -1,0 +1,10 @@
+﻿  main.cpp
+d:\nip\air\source\gkfn\gkfn\main.cpp(92): warning C4101: 'yest' :참조되지 않은 지역 변수입니다.
+d:\nip\air\source\gkfn\gkfn\main.cpp(92): warning C4101: 'ytrue' :참조되지 않은 지역 변수입니다.
+d:\nip\air\source\gkfn\gkfn\main.cpp(128): warning C4101: 'data_cnt' :참조되지 않은 지역 변수입니다.
+d:\nip\air\source\gkfn\gkfn\main.cpp(131): warning C4101: 'scale' :참조되지 않은 지역 변수입니다.
+d:\nip\air\source\gkfn\gkfn\main.cpp(126): warning C4101: 'i' :참조되지 않은 지역 변수입니다.
+d:\nip\air\source\gkfn\gkfn\main.cpp(180): warning C4101: 'scale' :참조되지 않은 지역 변수입니다.
+d:\nip\air\source\gkfn\gkfn\main.cpp(231): warning C4101: 'ch' :참조되지 않은 지역 변수입니다.
+  GKFN.vcxproj -> D:\NIP\AIR\Source\GKFN\Debug\GKFN.exe
+  GKFN.vcxproj -> D:\NIP\AIR\Source\GKFN\Debug\GKFN.pdb (Full PDB)
