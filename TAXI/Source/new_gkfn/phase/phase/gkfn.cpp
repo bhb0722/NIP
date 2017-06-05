@@ -19,6 +19,45 @@ GKFN::~GKFN() {
 	delete tso; delete  tsi; delete  tse;
 }
 
+GKFN::GKFN(int n, int nok, int epoch, double *X, double *Y) {
+	int i;
+
+	ts = new double[Nm];
+	tso = new double[Nm];
+	tsi = new double*[Nm];
+	tse = new double[Nm];
+
+	for (i = 0; i < Nm; i++)
+		tsi[i] = new double[id];
+
+	s = new double[DIM];
+	hn = new double[DIM];
+	ek = new double[Nm];
+	ck = new double[DIM];
+	m = new double*[DIM];
+	Si = new double*[DIM];
+	o_sse = new double[DIM];
+
+	for (i = 0; i < DIM; i++) {
+		m[i] = new double[id];
+		Si[i] = new double[DIM];
+	}
+
+	for (i = 1; i <= n; i++) {
+
+		tsi[i][1] = X[i];
+		tso[i] = Y[i];
+	}
+
+	this->N = n;
+	this->Tk = 1;
+	
+	Nt = n;
+	K0 = 1.f;
+
+	learn(nok, epoch,0.0001f);
+}
+
 GKFN::GKFN(int N, double* ts, int E, int Tau, int PredictionStep, double TraningRate) {
 	int i, j, k;
 	double Rt;
@@ -144,15 +183,67 @@ void GKFN::learn(int NumOfKernels, int NumOfEpochs, double errMargin, double UBo
 
 	RECRUIT_FTN(); /* initial set-up of PFN */
 	GENERAL_INVERSE();
-	PREDICTION();
+
 }
 
-void GKFN::PREDICTION() { 
+void GKFN::prediction_function(int n, double* X, double* Y) {
+	int i, j;
+	double yavg, ytrue, yest;
+	double nu, de;
+	double yk, x;
+	double *pka = new double[Np + 1];
+
+	testRsq = 0.f;
+	testRmse = 0.f;
+	yavg = 0.f;
+	nu = 0.f;
+	de = 0.f;
+
+	for (i = 1; i <= n; i++) {
+		for (j = 1; j <= Np; ++j) {
+			double *pat = new double[2];
+			pat[1] = X[i];
+			x = s[j];
+			pka[j] = kernx(Tk, x, pat, m[j]);
+			delete pat;
+		}
+
+		yk = inner(Np, pka, ck);
+
+		if (yk < 0)
+			yk = 0.f;
+
+		tse[i] = yk * 500.f;
+	}
+
+	delete pka;
+
+	for (i = 1; i <= n; i++)
+		yavg += Y[i];
+
+	yavg /= n;
+
+	for (i = 1; i <= n; i++) {
+		ytrue = Y[i];
+		yest = tse[i];
+
+		testRmse += (ytrue - yest)*(ytrue - yest);
+		de += (ytrue - yavg)*(ytrue - yavg);
+	}
+
+	nu = testRmse;
+	testRsq = 1.f - nu / de;
+
+	testRmse /= n; // 여기 n-> Ns
+	testRmse = sqrt(testRmse);
+}
+
+void GKFN::prediction_time_series() {
 	int i, j, n = Nt + Nf;
 	double yavg, ytrue, yest;
 	double nu, de;
 	double yk, x;
-	double *pka = new double[Np+1];
+	double *pka = new double[Np + 1];
 
 	trainRsq = 0.f;
 	testRsq = 0.f;
@@ -201,12 +292,12 @@ void GKFN::PREDICTION() {
 	de = 0.f;
 	nu = 0.f;
 
-	for (i = Nt+1; i <= n; i++)
+	for (i = Nt + 1; i <= n; i++)
 		yavg += tso[i];
 
 	yavg /= Nf;
 
-	for (i = Nt+1; i <= n; i++) {
+	for (i = Nt + 1; i <= n; i++) {
 		ytrue = tso[i];
 		yest = tse[i];
 
@@ -220,8 +311,8 @@ void GKFN::PREDICTION() {
 	testRmse /= Nf; // 여기 n -> Nf
 	testRmse = sqrt(testRmse);
 
-	
 }
+
 
 void GKFN::RECRUIT_FTN()
 {

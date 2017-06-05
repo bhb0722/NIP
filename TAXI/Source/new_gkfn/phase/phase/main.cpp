@@ -29,7 +29,7 @@ int main() {
 		
 
 		avg = 0.f;
-		for (j = 1; fscanf(fi, "%lf", &ts[j]) == 1; ++j) avg += ts[j];
+		for (j = 0; fscanf(fi, "%lf", &ts[j]) == 1; +j) avg += ts[j];
 		fclose(fi);
 		n = j - 1;
 		avg /= n;
@@ -40,7 +40,7 @@ int main() {
 
 		/*E = 10;
 		Tau = 3;*/
-	
+
 
 		sprintf(fname, "result/z_%d.csv", i);
 		fo = fopen(fname, "w");
