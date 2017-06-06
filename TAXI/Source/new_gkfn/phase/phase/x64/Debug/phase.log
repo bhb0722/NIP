@@ -1,2 +1,8 @@
-﻿  phase.vcxproj -> D:\NIP\trunk\TAXI\Source\new_gkfn\phase\x64\Debug\phase.exe
+﻿  main2.cpp
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main2.cpp(10): warning C4101: 'nok' :참조되지 않은 지역 변수입니다.
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main2.cpp(13): warning C4101: 'fo' :참조되지 않은 지역 변수입니다.
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main2.cpp(10): warning C4101: 'Tau' :참조되지 않은 지역 변수입니다.
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main2.cpp(10): warning C4101: 'E' :참조되지 않은 지역 변수입니다.
+d:\nip\trunk\taxi\source\new_gkfn\phase\phase\main2.cpp(16): warning C4101: 'avg' :참조되지 않은 지역 변수입니다.
+  phase.vcxproj -> D:\NIP\trunk\TAXI\Source\new_gkfn\phase\x64\Debug\phase.exe
   phase.vcxproj -> D:\NIP\trunk\TAXI\Source\new_gkfn\phase\x64\Debug\phase.pdb (Partial PDB)

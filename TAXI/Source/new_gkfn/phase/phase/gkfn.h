@@ -8,11 +8,11 @@
 #define SGN(x) ((x) > 0 ? (1):(-1)) 
 #define SQUARE(x) (if x)
 #define pi 3.141596
-#define id 30       /* max. dimension of input space */   
-#define DIM 600      /* max. dimension of PFUs */
-#define Nm 3000     /* max. number of time series data */      
+#define id 3       /* max. dimension of input space */   
+#define DIM 300      /* max. dimension of PFUs */
+#define Nm 500     /* max. number of time series data */      
 #define sc 0.5      /* initial set-up coeff. of sigma */
-#define er 0.9      /* error decrement rate */
+#define er 0.9     /* error decrement rate */
 #define Ip 10       /* number of iterations for parameter estimation */
 #define cut 0.01
 
@@ -54,9 +54,12 @@ class GKFN {
 public:
 	~GKFN();
 	GKFN() {}
+	GKFN(int n, int m, int epoch, double *X, double *Y);
 	GKFN(int N, double* ts, int E, int Tau, int PredictionStep, double TraningRate);
 	GKFN(char *filename, int E, int Tau, int PredictionStep, double TraningRate);
 	void learn(int NumOfKernels, int NumOfEpochs, double errMargin = 1.f, double UBofSTD = 1.f);
+	void GKFN::prediction_function(int n, double* X, double* Y);
+	void prediction_time_series();
 	double getTrainRsquared() {
 		return trainRsq;
 	}
@@ -75,7 +78,6 @@ private:
 
 	void RECRUIT_FTN();
 	void GENERAL_INVERSE();
-	void PREDICTION();
 
 
 	void SIGMA_HN(int iter);
