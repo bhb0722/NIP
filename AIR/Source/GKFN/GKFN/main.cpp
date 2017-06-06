@@ -14,13 +14,14 @@
 
 #define MAX_BUF 1024
 
-int E_MIN = 3, E_MAX = 9;
-int TAU_MIN = 1, TAU_MAX = 10;
-int NOK_MIN = 10, NOK_MAX = 15;
-float SMTHRESHOLD = 0.1f;
+int E_MIN = 1, E_MAX = 15;
+int TAU_MIN = 1, TAU_MAX = 7;	
+int NOK_MIN = 5, NOK_MAX = 15;
+float SMTHRESHOLD = 0.5f;
 double TRATE_MIN = 0.8, TRATE_MAX = 0.8;
 
 double **data;
+double *rsq_max;
 #if DAY
 double **daily_data;
 #endif
@@ -56,6 +57,7 @@ int main() {
 	for (int i = 0; i < SPOTS; i++) {
 		data[i] = (double *)calloc(N_DATA+1, sizeof(double));
 	}
+	rsq_max = (double *)calloc(SPOTS, sizeof(double));
 #if DAY
 	daily_data = (double **)calloc(SPOTS, sizeof(double *));
 	for (int i = 0; i < SPOTS; i++) {
@@ -63,11 +65,11 @@ int main() {
 	}
 #endif
 	// For each element
-	for (int element = 1; element <= 5; element++) {
+	for (int element = 3; element <= 5; element++) {
 
 		readData(element);
 
-		for (int spotIndex = 8; spotIndex < 9; spotIndex++) {
+		for (int spotIndex = 0; spotIndex < SPOTS; spotIndex++) {
 
 			printf("%s %s\n", spots[spotIndex], elements[element-1]);
 			interpolation(data[spotIndex]);
@@ -77,8 +79,8 @@ int main() {
 			scaling(daily_data[spotIndex], N_DAYS);
 			calSmoothnessMeasure(element, SMTHRESHOLD, N_DAYS, daily_data[spotIndex], 1, E, Tau);
 #else
-			calSmoothnessMeasure(element, SMTHRESHOLD, N_DATA, data[spotIndex], 1, E, Tau);
 			scaling(data[spotIndex], N_DATA);
+			calSmoothnessMeasure(element, SMTHRESHOLD, N_DATA, data[spotIndex], 1, E, Tau);
 #endif
 
 			sprintf(fname, "result/%s_%s.csv", spots[spotIndex], elements[element-1]);
@@ -100,7 +102,8 @@ int main() {
 					trrmse = model->getTrainRMSE();
 					termse = model->getTestRMSE();
 
-					// ÀÌ°Å
+					rsq_max[spotIndex] = rsq_max[spotIndex] > tersq ? rsq_max[spotIndex] : tersq;
+
 					if (isnan(trrsq) || isnan(tersq) || isnan(trrmse) || isnan(termse)) {
 						delete model;
 						break;
@@ -116,6 +119,15 @@ int main() {
 			fclose(fo);
 
 		}
+		double avg_rsq = 0.;
+
+		for (int i = 0; i < SPOTS; i++) {
+			avg_rsq += rsq_max[i];
+		}
+		avg_rsq /= SPOTS;
+
+		printf("Average Rsq is : %lf\n", avg_rsq);
+
 	}
 	disposeMem();
 
